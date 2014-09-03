@@ -1,0 +1,178 @@
+--- BLACK SCREEN ---
+
+Hello there!
+It's so very nice to meet you!
+
+Welcome to the world of Pokemon!
+
+--- LONG FADE ---
+
+My name is Rowan.
+
+However, everyone just calls me
+the Pokemon Professor.
+
+Before I go any further, is this
+your first adventure?
+
+If you need advice, I'm certainly
+capable of giving it.
+
+--- SLIDE PROF RIGHT ---
+--- SHOW MULTICHOICE ---
+CONTROL INFO
+ADVENTURE INFO
+NO INFO NEEDED
+
+CONTROL INFO:
+
+Blue screen
+
+DPAD: Moves the main character. Also used to choose various headings and selections.
+A: Used to confirm a choice, check things, chat, and scroll text.
+B: Used to exit, cancel a choice, and cancel a mode.
+
+-- PRESS A TO GO TO NEXT SCREEN ---
+
+X: Press to open the menu.
+Y: Press to use an item, such as a Bicycle, that has been registered in advance.
+
+-- PRESS A TO GO TO NEXT SCREEN ---
+
+Do you understand everything
+so far?
+
+YES/NO
+
+-- FADE BACK TO PROF IN CENTRE --
+
+Would you like to know more about
+anything else?
+
+--- SLIDE PROF RIGHT ---
+--- SHOW MULTICHOICE ---
+--- REPEAT ---
+
+ADVENTURE INFO:
+
+Story - TODO
+
+--- SLIDE PROF LEFT ---
+
+This world is widely inhabited by
+creatures known as Pokemon.
+
+Here, I have a Poke Ball.
+
+Touch the button on the middle of
+the Poke Ball, if you'd please.
+
+No, no! Not that button!
+The button on the Poke Ball.
+
+--- TOUCH BUTTON, RELEASE BUNNY ---
+--- BUNNY JUMPS AROUND. WAIT FOR IT TO FINISH ITS ANTICS ---
+
+We humans live alongside Pokemon
+as friends.
+
+At times we play together,
+and at other times we\l
+work together.
+
+Some people use their Pokemon
+to battle and develop
+closer bonds with them.
+
+What do I do?
+
+I conduct research so that we may
+learn more about Pokemon.
+
+--- FADE BUNNY ---
+
+Now, why don't you tell me
+a little bit about yourself?
+
+--- FADE PROFESSOR ---
+--- FADE IN LUCAS ON RIGHT ---
+--- THEN FADE IN DAWN ON LEFT ---
+
+Are you a boy?
+Or are you a girl?
+
+--- WAIT FOR KEYPRESS ---
+--- DAWN BECOMES TRANSPARENT, LUCAS ANIMATES---
+--- ALLOW SELECTION BETWEEN THE TWO ---
+
+--- SELECTED ONE SLIDES TO CENTRE ---
+All right, so you're a boy?
+All right, so you're a girl?
+--- WAIT KEYPRESS ---
+--- YES/NO TOP LEFT ---
+--- FADE IN BOTH IF NO AND REPEAT ---
+
+Tell me, what is your name?
+
+Your name?
+--- NAME YOURSELF ---
+--- JINGLE ON ACCEPT ---
+
+Your name is W?
+--- WAIT KEYPRESS ---
+--- YES/NO TOP LEFT ---
+--- IF NO, GO BACK TO GIRL/BOY ---
+
+--- FADE PROF BACK IN ---
+OK...
+So, you're [PLAYER]?
+
+A fine name that is!
+
+Now, this boy here...
+I believe he's your friend.
+
+--- FADE PROF OUT ---
+--- FADE FRIEND IN ---
+
+What might his name be?
+
+--- SLIDE RIGHT ---
+--- MULTICHOICE NAME ---
+New Name!: Your friend's name?
+Barry
+Nolan
+Roy
+Gavin
+
+[RIVAL], is it?
+That's your friend's name?
+--- WAIT KEYPRESS ---
+--- YES/NO TOP LEFT ---
+
+--- REPEAT IF NO --- 
+
+All right, [PLAYER], the time
+has come.
+
+Your very own tale of grand
+adventure is about to unfold.
+
+On your journey, you will meet
+countless Pokemon and people.
+
+I'm sure that along the way you will
+discover many things, perhaps even
+something about yourself.
+
+Now, go on, leap into the world of
+Pokemon!
+
+--- WAIT KEYPRESS---
+--- FADE PROF OUT ---
+--- WAIT A BIT ---
+--- FADE PLAYER IN ---
+--- SHRINK PLAYER ---
+--- FADE TO BLACK ---
+
+

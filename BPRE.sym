@@ -1,0 +1,29 @@
+getPkmStat = 0x201CD25;
+setPkmStat = 0x201CD49;
+
+loadMessageBox = 0x080F6EE5;
+fdecoder = 0x08008FCD;
+box_related_one = 0x080F6CD1;
+check_a_pressed = 0x08002E65;
+rboxid_to_vram = 0x08003F21;
+fadescreen = 0x08070589;
+
+malloc_and_LZ77UnComp = 0x080F6AA1;
+gpu_copy_to_tileset = 0x080017D1;
+gpu_copy_tilemap = 0x08002041;
+bgid_send_tilemap = 0x080020BD;
+gpu_sync_bg_show = 0x080019BD;
+song_play_for_text = 0x080722A1;
+
+
+LZ77UnCompVram = 0x081E3B6D;
+
+gpu_pal_apply = 0x080703ED;
+
+malloc_and_clear = 0x08002BB1;
+free = 0x08002BC4;
+
+bgid_fill_rectangle = 0x08002555;
+
+
+textbox_close = 0x080694F5;
