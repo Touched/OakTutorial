@@ -139,6 +139,33 @@ void callback (u8 index) {
 	}
 }
 
+typedef struct resource {
+	u32 tiles;
+	u16 offset;
+	u16 tag;
+} resource;
+
+typedef struct sprite {
+	u16 attr0;
+	u16 attr1;
+	u16 attr2;
+	u16 rotscale;
+} sprite;
+
+typedef struct template {
+	u16 tiles_tag;
+	u16 pal_tag;
+	sprite *oam;
+	u32 animation;
+	u32 graphics;
+	u32 rotscale;
+	u32 callback;
+} template;
+
+resource graphics = { 0x8462A10, 0x600, 0x1000 };
+resource palette = { 0x84629D0, 0x1000, 0 };
+template temp = { 0x1000, 0x1000, (sprite*)0x83ACAF8, 0x8462F44, 0, 0x8231CFC, 0x800760D };
+
 void helloThere(u8 index) {
 	task *tasks = (task *) 0x3005090;
 
@@ -149,6 +176,21 @@ void helloThere(u8 index) {
 		u32 **ptr = (u32**) 0x0203B108;
 		char *dest = (char*) 0x02021D18;
 		u8 b = 8;
+		u8 i;
+
+		u16 (*object_from_compressed)(u32*) = (u16 (*)(void)) 0x0800EBCC + 1;
+		u8 (*object_apply_palette)(u32*) = (u8 (*)(void)) 0x08008928 + 1;
+		u8 (*object_search)(u32*,u16,u16,u8) = (u8 (*)(void)) 0x08006F8C + 1;
+
+		//object_from_compressed((u32*) 0x8462F14);
+		//object_apply_palette((u32*) 0x8462F24);
+
+		object_from_compressed((u32*) &graphics);
+		object_apply_palette((u32*) &palette);
+		for (i = 0; i < 3; ++i) {
+			//object_search(0x8462F50 + (i * 0x18), ((i << 0x15) + 0x580000) >> 0x10, 0x70, 1);
+			object_search((u32*) &temp, ((i << 0x15) + 0x580000) >> 0x10, 0x70, 1);
+		}
 
 		loadMessageBox(0, 0);
 		fdecoder(dest, (char*) caHelloThere);

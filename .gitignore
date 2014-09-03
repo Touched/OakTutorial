@@ -46,3 +46,7 @@ devkitARM
 *.exe
 *.sav
 *.ini
+
+# Eclipse
+.project
+.cproject
