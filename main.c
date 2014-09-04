@@ -1,5 +1,6 @@
 #include "oakintro.h"
 #include "strings.h"
+#include "images/lucas.h"
 
 void callback (u8 index);
 
@@ -16,6 +17,10 @@ void chooseGender(u8 index);
 void unfadeBoy(u8 index);
 void unfadeGirl(u8 index);
 void boyGirl(u8 index);
+
+void blank(u8 index) {
+
+}
 
 u16 (*lcd_io_set)(u8, u16) = (u16 (*)(void)) 0x08000A38 + 1; 
 
@@ -139,11 +144,6 @@ void callback (u8 index) {
 	}
 }
 
-typedef struct resource {
-	u32 tiles;
-	u16 offset;
-	u16 tag;
-} resource;
 
 typedef struct sprite {
 	u16 attr0;
@@ -151,6 +151,37 @@ typedef struct sprite {
 	u16 attr2;
 	u16 rotscale;
 } sprite;
+typedef struct object {
+	sprite final_oam;
+	u32 *animation_table;
+	u32 *gfx_table;
+	u32 *rotscale_table;
+	u32 *template;
+	u32 field18;
+	u32 *callback;
+	u16 x;
+	u16 y;
+	u16 x2;
+	u16 y2;
+	u8 x_centre;
+	u8 y_centre;
+	u8 anim_number;
+	u8 anim_frame;
+	u8 anim_delay;
+	u8 counter;
+	u16 private[7];
+	u8 bitfield2;
+	u8 bitfield;
+	u16 anim_data_offset;
+	u8 field42;
+	u8 field43;
+} object;
+
+typedef struct resource {
+	u32 tiles;
+	u16 size;
+	u16 tag;
+} resource;
 
 typedef struct template {
 	u16 tiles_tag;
@@ -162,9 +193,36 @@ typedef struct template {
 	u32 callback;
 } template;
 
-resource graphics = { 0x8462A10, 0x600, 0x1000 };
-resource palette = { 0x84629D0, 0x1000, 0 };
-template temp = { 0x1000, 0x1000, (sprite*)0x83ACAF8, 0x8462F44, 0, 0x8231CFC, 0x800760D };
+typedef struct frame {
+	u16 data;
+	u16 duration;
+} frame;
+
+// { 0xFFFE, 0 } means loop
+// { 0xFFFF, 0 } means end
+// You can toggle between animations by setting anim_number
+
+frame anim[] = { { 0x0, 0x10 }, { 0x100, 0x10  }, { 0x80, 0x10  }, { 0x180, 0x10  }, { 0xFFFE, 0 } };
+frame anim2[] = { { 0x40, 0x10 }, { 0x140, 0x10  }, { 0xC0, 0x10  }, { 0x1C0, 0x10  }, { 0xFFFE, 0 } };
+frame **pAnimTop = &anim;
+frame **pAnimBottom = &anim2;
+
+void object_cb (object *self) {
+
+}
+
+// 3c bc 40 08
+// 0840bc3c
+
+sprite oam = { 0x400, 0xC000, 0x800, 0x0 };
+sprite oam2 = { 0x2400, 0xC000, 0x800, 0x0 };
+//resource graphics = { 0x0846163C, 0x7FFF, 0x1000 };
+resource graphics = { lucasTiles, 0x7FFF, 0x1000 };
+//resource palette = { 0x84629D0, 0x1000, 0x1000  };
+resource palette = { lucasPal, 0x1000, 0x1000  };
+template temp = { 0x1000, 0x1000, &oam, &pAnimTop, 0, 0x8231CFC, 0x800760D };
+//template temp2 = { 0x1000, 0x1000, &oam, &ptra, 0, 0x8231CFC, 0x800760D };
+template temp2 = { 0x1000, 0x1000, &oam, &pAnimBottom, 0, 0x8231CFC, &object_cb };
 
 void helloThere(u8 index) {
 	task *tasks = (task *) 0x3005090;
@@ -181,16 +239,29 @@ void helloThere(u8 index) {
 		u16 (*object_from_compressed)(u32*) = (u16 (*)(void)) 0x0800EBCC + 1;
 		u8 (*object_apply_palette)(u32*) = (u8 (*)(void)) 0x08008928 + 1;
 		u8 (*object_search)(u32*,u16,u16,u8) = (u8 (*)(void)) 0x08006F8C + 1;
+		void (*load_pal)(u32*,u16,u16) = (void (*)(void)) 0x080703EC + 1;
+		void (*lcd_io_set)(u8,u16) = (void (*)(void)) 0x08000A38 + 1;
 
 		//object_from_compressed((u32*) 0x8462F14);
 		//object_apply_palette((u32*) 0x8462F24);
 
 		object_from_compressed((u32*) &graphics);
 		object_apply_palette((u32*) &palette);
-		for (i = 0; i < 3; ++i) {
-			//object_search(0x8462F50 + (i * 0x18), ((i << 0x15) + 0x580000) >> 0x10, 0x70, 1);
-			object_search((u32*) &temp, ((i << 0x15) + 0x580000) >> 0x10, 0x70, 1);
-		}
+
+		// For 256
+		//load_pal((u32*) 0x084615FC, 0x100 + 4 * 16, 16 * 2 * 2);
+
+		// Set BLDCNT to allow alpha blending of OAM onto bg
+		lcd_io_set(0x50, 0x2F50);
+
+		// Set opacity of the sprites
+		lcd_io_set(0x52, 0x40C);
+
+		// Now we can toggle the one objects opacity bit to set which objects are blended
+
+		// This isn't a search, it controls display of objects
+		object_search((u32*) &temp, 64, 0x30, 1);
+		object_search((u32*) &temp2, 64, 0x70, 1);
 
 		loadMessageBox(0, 0);
 		fdecoder(dest, (char*) caHelloThere);
@@ -218,11 +289,12 @@ void showRowan(u8 index) {
 		unfadeScreen();
 		song_play_for_text(0x124);
 
+
 		/* Show person. There's gonna be a memory leak */
 		bgid_send_tilemap(2);
 
 		tasks[index].args[6] = 0xA0;
-		tasks[index].function = (u32) introduceRowan;
+		tasks[index].function = (u32) blank;//introduceRowan;
 	} else {
 		tasks[index].args[6] = arg - 1;
 	}

@@ -51,7 +51,7 @@ def target(path):
     elif ext in ['.c']:
         target_name += '.o'
         output = '{}: {}\n\t'.format(target_name, path.strip())
-        output += '$(CC) $(CFLAGS) -c {}'.format(path)
+        output += '$(CC) $(CFLAGS) -c {} -o {}'.format(path, target_name)
     elif ext in ['.cc', '.cpp', '.cxx']:
         target_name += '.o'
         output = '{}: {}\n\t'.format(target_name, path.strip())
