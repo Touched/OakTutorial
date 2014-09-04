@@ -3,8 +3,10 @@
 #include "engine/callback.h"
 #include "engine/input.h"
 #include "engine/audio.h"
+#include "engine/text.h"
 #include "images/lucas.h"
 #include "images/dawn.h"
+#include "strings.h"
 
 /* What BLDALPHA will be set to when half faded */
 #define PARTIAL_FADE 0xA03
@@ -140,8 +142,11 @@ void fadeInLucas(u8 index);
 void fadeInDawn(u8 index);
 void genderChooser(u8 index);
 void confirmGenderChoice(u8 index);
+void confirmGenderChoiceHandler(u8 index);
 void slideDawn(u8 index);
 void slideLucas(u8 index);
+void repeatGender(u8 index);
+void setGender(u8 index);
 
 void chooseGender(u8 index) {
 	//loadBigSprite(&dawnGraphics, &dawnPalette, &dawnTop, &dawnBottom, 0x30, 0x20);
@@ -239,11 +244,15 @@ void genderChooser(u8 index) {
 
 	if (buttons->A) {
 		/* Player has accepted the choice, confirm their decision */
-		audio_play(SOUND_CLINK);
+		tasks[index].args[6] = FADE_STEPS;
+		tasks[index].args[7] = 0xA;
+		tasks[index].args[8] = 0x3;
+
 		if (state->choice) {
 			/* Request the callback to centre Dawn */
 			state->dawnCenter = 1;
 			state->dawnAnimate = 0;
+
 			tasks[index].function = (u32) slideDawn;
 		} else {
 			/* Request the callback to centre Dawn */
@@ -254,23 +263,134 @@ void genderChooser(u8 index) {
 	}
 }
 
-void slideDawn(u8 index) {
-	if (state->dawnCenter) {
-		/* Dawn is still being centred. Wait for callback to clear bit */
-		return;
-	}
-	tasks[index].function = (u32) confirmGenderChoice;
-}
-
 void slideLucas(u8 index) {
+	/* Fade out Dawn */
+	u16 bg = tasks[index].args[7];
+	u16 fg = tasks[index].args[8];
+
+	if (bg < 0x12) {
+		if (!tasks[index].args[6]) {
+			tasks[index].args[7] = bg + 1;
+			tasks[index].args[8] = (fg) ? (fg - 1) : 0;
+			display_ioreg_set(0x52, (bg << 8) | fg);
+
+			tasks[index].args[6] = FADE_STEPS;
+		} else {
+			tasks[index].args[6] -= 1;
+		}
+	}
+
 	if (state->lucasCenter) {
 		/* Lucas is still being centred */
 		return;
 	}
 
+	/* Dawn is still being faded */
+	if (bg < 0x12) return;
+
+	showMessage(caConfirmBoy);
+	tasks[index].function = (u32) confirmGenderChoice;
+}
+
+void slideDawn(u8 index) {
+	/* Fade out Lucas */
+	u16 bg = tasks[index].args[7];
+	u16 fg = tasks[index].args[8];
+
+	if (bg < 0x12) {
+		if (!tasks[index].args[6]) {
+			tasks[index].args[7] = bg + 1;
+			tasks[index].args[8] = (fg) ? (fg - 1) : 0;
+			display_ioreg_set(0x52, (bg << 8) | fg);
+
+			tasks[index].args[6] = FADE_STEPS;
+		} else {
+			tasks[index].args[6] -= 1;
+		}
+	}
+
+	if (state->dawnCenter) {
+		/* Dawn is still being centred. Wait for callback to clear bit */
+		return;
+	}
+
+	/* Lucas is still being faded */
+	if (bg < 0x12) return;
+
+	showMessage(caConfirmGirl);
 	tasks[index].function = (u32) confirmGenderChoice;
 }
 
 void confirmGenderChoice(u8 index) {
+	char *choices[] = { caYes, caNo, 0 };
 
+	rbox box = {0, 2, 2, 4, 4, 0xF, 0x130};
+	tasks[index].args[0xD] = showMultichoice(&box, choices);
+
+	tasks[index].function = (u32) confirmGenderChoiceHandler;
+}
+
+void confirmGenderChoiceHandler(u8 index) {
+	u16 id = tasks[index].args[0xD];
+
+	switch(multichoice_get_response()) {
+	case 0:
+		/* Yes */
+		tasks[index].function = (u32) setGender;
+		hideMultichoice(id);
+		break;
+	case 1:
+		/* No */
+		tasks[index].function = (u32) repeatGender;
+		hideMultichoice(id);
+		break;
+	}
+}
+
+void repeatGender(u8 index) {
+	/*
+	 * Destroy the objects and try again.
+	 */
+
+	//  obj_delete_and_free_associated_resources
+
+	// or gpu_pal_free_by_tag, gpu_tile_obj_free_by_tag
+	// obj_delete_all
+
+	void (*object_free_all)() = (void (*)(void)) 0x08007770 + 1;
+	void (*gpu_pal_free_by_tag)(u16) = (void (*)(void)) 0x08008A30 + 1;
+	void (*gpu_tile_obj_free_by_tag)(u32*) = (void (*)(void)) 0x0800874C + 1;
+
+//	gpu_pal_free_by_tag(0x200);
+//		gpu_pal_free_by_tag(0x1000);
+//		gpu_tile_obj_free_by_tag(&lucasTop);
+//		gpu_tile_obj_free_by_tag(&lucasBottom);
+//		gpu_tile_obj_free_by_tag(&dawnBottom);
+//		gpu_tile_obj_free_by_tag(&dawnTop);
+	object_free_all();
+
+	tasks[index].function = (u32) chooseGender;
+}
+
+typedef struct playerData {
+	char name[8];
+	u8 gender;
+	u8 unk;
+	u16 trainer_id;
+	u16 secret_id;
+	u16 hours;
+	u8 minutes;
+	u8 seconds;
+	u8 frames;
+	u8 unk2;
+	u16 options;
+} playerData;
+
+void setGender(u8 index) {
+	/*
+	 * Player confirmed their gender, write the choice.
+	 */
+
+	playerData **player = (playerData **) 0x0300500C;
+	(*player)->gender = state->choice;
 }
