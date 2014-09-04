@@ -1,10 +1,7 @@
-typedef unsigned char    u8;
-typedef unsigned short   u16;
-typedef unsigned long    u32;
- 
-typedef signed char      s8;
-typedef signed short     s16;
-typedef signed long      s32;
+#ifndef OAK_INTRO_H_
+#define OAK_INTRO_H_
+
+#include "types.h"
 
 void loadMessageBox(u8 b1, u8 b2);
 char *fdecoder(char *dest, char *src);
@@ -29,5 +26,6 @@ void *malloc_and_clear(u32 size);
 void bgid_fill_rectangle(u8 bgid, u16 x, u8 y, u8 y2, u8 b1, u8 b2, u8 b3);
 void free(void *ptr);
 
-
 void textbox_close();
+
+#endif

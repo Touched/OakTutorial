@@ -15,7 +15,6 @@ bgid_send_tilemap = 0x080020BD;
 gpu_sync_bg_show = 0x080019BD;
 song_play_for_text = 0x080722A1;
 
-
 LZ77UnCompVram = 0x081E3B6D;
 
 gpu_pal_apply = 0x080703ED;
@@ -25,5 +24,12 @@ free = 0x08002BC4;
 
 bgid_fill_rectangle = 0x08002555;
 
-
 textbox_close = 0x080694F5;
+
+object_load_compressed_graphics = 0x0800EBCD;
+object_load_palette = 0x08008929;
+object_display = 0x08006F8D;
+load_palette = 0x080703ED;
+display_ioreg_set = 0x08000A39;
+
+audio_play = 0x080722CD;

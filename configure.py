@@ -109,7 +109,7 @@ DEFINES=-D{gamecode} -DSOFTWARE_VERSION={version}
 CFLAGS=-mthumb -mthumb-interwork -mcpu=arm7tdmi $(OPTS) -mlong-calls -march=armv4t -Wall -O3 $(DEFINES)
 CXXFLAGS=-mthumb -mthumb-interwork -mcpu=arm7tdmi $(OPTS) -mlong-calls -march=armv4t -Wall -O3 $(DEFINES)
 ASFLAGS=-mthumb
-LDFLAGS=
+LDFLAGS=-z muldefs
 """.format(toolchain=toolchain, gamecode=gamecode, version=version)
     body = '\n'.join(targets.values())
 

@@ -1,7 +1,10 @@
 #include "oakintro.h"
 #include "strings.h"
 #include "images/lucas.h"
+#include "engine/video.h"
+#include "engine/callback.h"
 
+extern void chooseGender(u8 index);
 void callback (u8 index);
 
 void helloThere(u8 index);
@@ -13,46 +16,12 @@ void handleRowanMultichoice(u8 index);
 void thisWorld(u8 index);
 void releaseBuneary(u8 index);
 void preChooseGender(u8 index);
-void chooseGender(u8 index);
 void unfadeBoy(u8 index);
 void unfadeGirl(u8 index);
 void boyGirl(u8 index);
 
-void blank(u8 index) {
-
-}
 
 u16 (*lcd_io_set)(u8, u16) = (u16 (*)(void)) 0x08000A38 + 1; 
-
-typedef struct task {
-	u32 function;
-	u8 in_use;
-	u8 prev;
-	u8 next;
-	u8 priority;
-	u16 args[16];
-} task;
-
-typedef struct fade_ctrl {
-	u16 bg_pal;
-	u16 obj_pal;
-	u16 scale;
-	u16 color;
-	u8 field8;
-	u8 field9;
-	u8 fieldA;
-	u8 fieldB;
-} fade_ctrl;
-
-typedef struct rbox {
-	u8 bgid;
-	u8 x;
-	u8 y;
-	u8 w;
-	u8 h;
-	u8 pal;
-	u16 offset;
-} rbox;
 
 void showMessage(char *message) {
 	char *dest = (char*) 0x02021D18;
@@ -86,7 +55,7 @@ void unfadeScreen();
 
 void callback (u8 index) {
 	u16 arg;
-	task *tasks = (task *) 0x3005090;
+	//task *tasks = (task *) 0x3005090;
 
 	//0812EC98
 	//u16 (*bg_vram_setup)(u8, u32, u8) = (u16 (*)(void)) 0x08001658 + 1;
@@ -138,95 +107,39 @@ void callback (u8 index) {
 		// free(data);
 
 		/* Next task */
-		tasks[index].function = (u32) helloThere;
+		//tasks[index].function = (u32) helloThere;
+
+		fadescreen(0xFFFFFFFF, 0x0, 0x10, 0x0, 0x0000);
+		tasks[index].function = (u32) showRowan;
 	} else {
 		tasks[index].args[6] -= 1;
 	}
 }
 
-
-typedef struct sprite {
-	u16 attr0;
-	u16 attr1;
-	u16 attr2;
-	u16 rotscale;
-} sprite;
-typedef struct object {
-	sprite final_oam;
-	u32 *animation_table;
-	u32 *gfx_table;
-	u32 *rotscale_table;
-	u32 *template;
-	u32 field18;
-	u32 *callback;
-	u16 x;
-	u16 y;
-	u16 x2;
-	u16 y2;
-	u8 x_centre;
-	u8 y_centre;
-	u8 anim_number;
-	u8 anim_frame;
-	u8 anim_delay;
-	u8 counter;
-	u16 private[7];
-	u8 bitfield2;
-	u8 bitfield;
-	u16 anim_data_offset;
-	u8 field42;
-	u8 field43;
-} object;
-
-typedef struct resource {
-	u32 tiles;
-	u16 size;
-	u16 tag;
-} resource;
-
-typedef struct template {
-	u16 tiles_tag;
-	u16 pal_tag;
-	sprite *oam;
-	u32 animation;
-	u32 graphics;
-	u32 rotscale;
-	u32 callback;
-} template;
-
-typedef struct frame {
-	u16 data;
-	u16 duration;
-} frame;
-
 // { 0xFFFE, 0 } means loop
 // { 0xFFFF, 0 } means end
 // You can toggle between animations by setting anim_number
 
-frame anim[] = { { 0x0, 0x10 }, { 0x100, 0x10  }, { 0x80, 0x10  }, { 0x180, 0x10  }, { 0xFFFE, 0 } };
-frame anim2[] = { { 0x40, 0x10 }, { 0x140, 0x10  }, { 0xC0, 0x10  }, { 0x1C0, 0x10  }, { 0xFFFE, 0 } };
-frame **pAnimTop = &anim;
-frame **pAnimBottom = &anim2;
+//frame anim[] = { { 0x0, 0x10 }, { 0x100, 0x10  }, { 0x80, 0x10  }, { 0x180, 0x10  }, { 0xFFFE, 0 } };
+//frame anim2[] = { { 0x40, 0x10 }, { 0x140, 0x10  }, { 0xC0, 0x10  }, { 0x1C0, 0x10  }, { 0xFFFE, 0 } };
+//frame **pAnimTop = &anim;
+//frame **pAnimBottom = &anim2;
 
 void object_cb (object *self) {
 
 }
 
-// 3c bc 40 08
-// 0840bc3c
-
-sprite oam = { 0x400, 0xC000, 0x800, 0x0 };
-sprite oam2 = { 0x2400, 0xC000, 0x800, 0x0 };
-//resource graphics = { 0x0846163C, 0x7FFF, 0x1000 };
-resource graphics = { lucasTiles, 0x7FFF, 0x1000 };
-//resource palette = { 0x84629D0, 0x1000, 0x1000  };
-resource palette = { lucasPal, 0x1000, 0x1000  };
-template temp = { 0x1000, 0x1000, &oam, &pAnimTop, 0, 0x8231CFC, 0x800760D };
-//template temp2 = { 0x1000, 0x1000, &oam, &ptra, 0, 0x8231CFC, 0x800760D };
-template temp2 = { 0x1000, 0x1000, &oam, &pAnimBottom, 0, 0x8231CFC, &object_cb };
+//sprite oam = { 0x400, 0xC000, 0x800, 0x0 };
+//sprite oam2 = { 0x2400, 0xC000, 0x800, 0x0 };
+////resource graphics = { 0x0846163C, 0x7FFF, 0x1000 };
+//resource graphics = { lucasTiles, 0x7FFF, 0x1000 };
+////resource palette = { 0x84629D0, 0x1000, 0x1000  };
+//resource palette = { lucasPal, 0x1000, 0x1000  };
+//template temp = { 0x1000, 0x1000, &oam, &pAnimTop, 0, 0x8231CFC, 0x800760D };
+////template temp2 = { 0x1000, 0x1000, &oam, &ptra, 0, 0x8231CFC, 0x800760D };
+//template temp2 = { 0x1000, 0x1000, &oam, &pAnimBottom, 0, 0x8231CFC, &object_cb };
 
 void helloThere(u8 index) {
-	task *tasks = (task *) 0x3005090;
-
 	u16 arg;
 
 	arg = tasks[index].args[6];
@@ -245,23 +158,23 @@ void helloThere(u8 index) {
 		//object_from_compressed((u32*) 0x8462F14);
 		//object_apply_palette((u32*) 0x8462F24);
 
-		object_from_compressed((u32*) &graphics);
-		object_apply_palette((u32*) &palette);
+		//object_from_compressed((u32*) &graphics);
+		//object_apply_palette((u32*) &palette);
 
 		// For 256
 		//load_pal((u32*) 0x084615FC, 0x100 + 4 * 16, 16 * 2 * 2);
 
 		// Set BLDCNT to allow alpha blending of OAM onto bg
-		lcd_io_set(0x50, 0x2F50);
+		//lcd_io_set(0x50, 0x2F50);
 
 		// Set opacity of the sprites
-		lcd_io_set(0x52, 0x40C);
+		//lcd_io_set(0x52, 0x40C);
 
 		// Now we can toggle the one objects opacity bit to set which objects are blended
 
 		// This isn't a search, it controls display of objects
-		object_search((u32*) &temp, 64, 0x30, 1);
-		object_search((u32*) &temp2, 64, 0x70, 1);
+		//object_search((u32*) &temp, 64, 0x30, 1);
+		// object_search((u32*) &temp2, 64, 0x70, 1);
 
 		loadMessageBox(0, 0);
 		fdecoder(dest, (char*) caHelloThere);
@@ -278,7 +191,7 @@ void helloThere(u8 index) {
 }
 
 void showRowan(u8 index) {
-	task *tasks = (task *) 0x3005090;
+	//task *tasks = (task *) 0x3005090;
 
 	/* Wait for A press */
 	if (check_a_pressed(0)) return;
@@ -289,12 +202,11 @@ void showRowan(u8 index) {
 		unfadeScreen();
 		song_play_for_text(0x124);
 
-
 		/* Show person. There's gonna be a memory leak */
 		bgid_send_tilemap(2);
 
 		tasks[index].args[6] = 0xA0;
-		tasks[index].function = (u32) blank;//introduceRowan;
+		tasks[index].function = (u32) chooseGender;//introduceRowan;
 	} else {
 		tasks[index].args[6] = arg - 1;
 	}
@@ -302,7 +214,7 @@ void showRowan(u8 index) {
 }
 
 void introduceRowan(u8 index) {
-	task *tasks = (task *) 0x3005090;
+	//task *tasks = (task *) 0x3005090;
 
 	fade_ctrl *fade_control = (fade_ctrl *) 0x02037AB8;
 	u16 arg;
@@ -377,7 +289,7 @@ void multichoice() {
 }
 
 void preRowanMultichoice(u8 index) {
-	task *tasks = (task *) 0x3005090;
+	//task *tasks = (task *) 0x3005090;
 	char *dest = (char*) 0x02021D18;
 	u32 *okay = (u32*) 0x2020050;
 
@@ -406,7 +318,7 @@ void preRowanMultichoice(u8 index) {
 }
 
 void slideRowanMultichoice(u8 index) {
-	task *tasks = (task *) 0x3005090;
+	//task *tasks = (task *) 0x3005090;
 	u32 **ptr = (u32**) 0x0203B108;
 	u16 *		displace = (u16*) 0x02021BC8;
 	u16 arg;
@@ -468,7 +380,7 @@ void slideRowanMultichoice(u8 index) {
 
 void handleRowanMultichoice(u8 index) {
 	u16 id;
-	task *tasks = (task *) 0x3005090;
+	//task *tasks = (task *) 0x3005090;
 	int (*freebox)(u8) = (int (*)(void)) 0x0810F4D8 + 1;
 	int (*clearbox)(u16) = (int (*)(void)) 0x08003E3C + 1;
 	int (*finalbox)(u8, u8) = (int (*)(void)) 0x80F6F54 + 1;
@@ -496,7 +408,7 @@ void handleRowanMultichoice(u8 index) {
 }
 
 void thisWorld(u8 index) {
-	task *tasks = (task *) 0x3005090;
+	//task *tasks = (task *) 0x3005090;
 	u32 **ptr = (u32**) 0x0203B108;
 	u16 *		displace = (u16*) 0x02021BC8;
 	u16 arg;
@@ -526,7 +438,7 @@ void thisWorld(u8 index) {
 }
 
 void releaseBuneary(u8 index) {
-	task *tasks = (task *) 0x3005090;
+	//task *tasks = (task *) 0x3005090;
 
 	if (check_a_pressed(0)) return;
 
@@ -535,7 +447,7 @@ void releaseBuneary(u8 index) {
 }
 
 void preChooseGender(u8 index) {
-	task *tasks = (task *) 0x3005090;
+	//task *tasks = (task *) 0x3005090;
 
 	//if (check_a_pressed(0)) return;
 	
@@ -543,10 +455,10 @@ void preChooseGender(u8 index) {
 	fade(index, 2);
 
 	tasks[index].args[6] = 0x70;
-	tasks[index].function = (u32) chooseGender;
+	//tasks[index].function = (u32) chooseGender;
 }
 
-void loadBigSprite(u32 img, u32 pal, u32 dest, u8 bgid, u8 x) {
+void loadBigSprite2(u32 img, u32 pal, u32 dest, u8 bgid, u8 x) {
 	u8 *ptr;
 	void *data;
 	u8 i;
@@ -566,7 +478,7 @@ void loadBigSprite(u32 img, u32 pal, u32 dest, u8 bgid, u8 x) {
 	bgid_send_tilemap(bgid);
 }
 
-void chooseGender(u8 index) {
+void chooseGender2(u8 index) {
 	task *tasks = (task *) 0x3005090;
 
 	if (tasks[index].args[6]) {
@@ -574,8 +486,8 @@ void chooseGender(u8 index) {
 		return;
 	}
 
-	loadBigSprite(0x0846163C, 0x084615FC, 0x6000C00, 3, 0x0);
-	loadBigSprite(0x08461D14, 0x08461CD4, 0x6000600, 2, 0xB);
+	//loadBigSprite(0x0846163C, 0x084615FC, 0x6000C00, 3, 0x0);
+	//loadBigSprite(0x08461D14, 0x08461CD4, 0x6000600, 2, 0xB);
 
 	tasks[index].args[6] = 0x1E;
 	tasks[index].function = (u32) unfadeBoy;

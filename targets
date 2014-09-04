@@ -1,6 +1,7 @@
 bootstrap.s
 strings.csv
 main.c
+gender.c
 images/lucas.c
 images/dawn.c
 images/prof.c
