@@ -15,6 +15,8 @@ bgid_send_tilemap = 0x080020BD;
 gpu_sync_bg_show = 0x080019BD;
 song_play_for_text = 0x080722A1;
 
+memcpy = 0x081E5E79;
+
 LZ77UnCompVram = 0x081E3B6D;
 
 gpu_pal_apply = 0x080703ED;
@@ -27,9 +29,20 @@ bgid_fill_rectangle = 0x08002555;
 textbox_close = 0x080694F5;
 
 object_load_compressed_graphics = 0x0800EBCD;
+object_load_graphics = 0x080086DD;
 object_load_palette = 0x08008929;
 object_display = 0x08006F8D;
 load_palette = 0x080703ED;
 display_ioreg_set = 0x08000A39;
 
 audio_play = 0x080722CD;
+
+load_rbox = 0x08003CE5;
+fix_box = 0x8003FA1;
+outline_box = 0x0810F2E9;
+clear_box = 0x0800445D;
+
+free_box = 0x0810F4D9;
+erase_box = 0x08003E3D;
+destroy_box = 0x80F6F55;
+multichoice_get_response = 0x0810FA05;

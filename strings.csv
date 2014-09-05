@@ -4,4 +4,8 @@ caAdvice	If you need advice, I[']m certainly\ncapable of giving it.\p
 caOptionInfoControls	CONTROL INFO
 caOptionInfoAdventure	ADVENTURE INFO
 caOptionInfoNone	NO INFO NEEDED
+caYes	YES
+caNo	NO
 caThisWorld	This world is widely inhabited by\ncreatures known as Pokemon.\p
+caConfirmBoy	All right, so you[']re a boy?
+caConfirmGirl	All right, so you[']re a girl?

@@ -20,23 +20,18 @@ void unfadeBoy(u8 index);
 void unfadeGirl(u8 index);
 void boyGirl(u8 index);
 
-
 u16 (*lcd_io_set)(u8, u16) = (u16 (*)(void)) 0x08000A38 + 1; 
-
-void showMessage(char *message) {
-	char *dest = (char*) 0x02021D18;
-	u8 b = 8;
-
-	loadMessageBox(0, 0);
-	fdecoder(dest, message);
-	box_related_one(0, 4, dest, b, 0, 2, 1, 3);
-
-	rboxid_to_vram(0, 3);
-}
-
-rbox boy_girl = {0, 0x12, 9, 9, 4, 0xF, 0x174};
-
-rbox info_multichoice = {0, 2, 2, 15, 6, 0xF, 0x130};
+//
+//void showMessage(char *message) {
+//	char *dest = (char*) 0x02021D18;
+//	u8 b = 8;
+//
+//	loadMessageBox(0, 0);
+//	fdecoder(dest, message);
+//	box_related_one(0, 4, dest, b, 0, 2, 1, 3);
+//
+//	rboxid_to_vram(0, 3);
+//}
 
 void fadeScreen() {
         fadescreen(0xFFFFFFFF, 0x0, 0, 0x10, 0x0000);
@@ -203,7 +198,7 @@ void showRowan(u8 index) {
 		song_play_for_text(0x124);
 
 		/* Show person. There's gonna be a memory leak */
-		bgid_send_tilemap(2);
+		//bgid_send_tilemap(2);
 
 		tasks[index].args[6] = 0xA0;
 		tasks[index].function = (u32) chooseGender;//introduceRowan;
@@ -254,7 +249,7 @@ void multichoice() {
 
 	// Load rbox
 	u16 (*func)(u32) = (u16 (*)(void)) 0x08003CE4 + 1;
-	id = func(&boy_girl);
+	//id = func(&boy_girl);
 
 	// New
 	//tasks[index].args[0xD] = id;
@@ -342,7 +337,7 @@ void slideRowanMultichoice(u8 index) {
 
 	// Load rbox
 	u16 (*func)(u32) = (u16 (*)(void)) 0x08003CE4 + 1;
-	id = func(&info_multichoice);
+	//id = func(&info_multichoice);
 
 	// New
 	tasks[index].args[0xD] = id;

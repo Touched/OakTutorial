@@ -21,16 +21,6 @@ typedef struct fade_ctrl {
 	u8 fieldB;
 } fade_ctrl;
 
-typedef struct rbox {
-	u8 bgid;
-	u8 x;
-	u8 y;
-	u8 w;
-	u8 h;
-	u8 pal;
-	u16 offset;
-} rbox;
-
 task *tasks = (task *) 0x3005090;
 
 #endif /* CALLBACK_H_ */

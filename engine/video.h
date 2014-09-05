@@ -68,6 +68,7 @@ object *objects = (object *) 0x0202063C;
 sprite *oamdata = (sprite*)0x07000000;
 
 u16 object_load_compressed_graphics(u32 *src);
+u16 object_load_graphics(u32 *src);
 u8 object_load_palette(u32 *src);
 u8 object_display(u32 *temp, u16 x, u16 y, u8 b);
 void load_palette(u32 *src, u16 dest_offset, u16 length);
