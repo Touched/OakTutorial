@@ -36,11 +36,11 @@ u16 (*lcd_io_set)(u8, u16) = (u16 (*)(void)) 0x08000A38 + 1;
 void fadeScreen() {
         fadescreen(0xFFFFFFFF, 0x0, 0, 0x10, 0x0000);
 }
- 
+
 void unfadeScreenWhite() {
         fadescreen(0xFFFFFFFF, 0x0, 0x10, 0, 0x7FFF);
 }
- 
+
 void fadeScreenWhite() {
         fadescreen(0xFFFFFFFF, 0x0, 0, 0x10, 0x7FFF);
 }
@@ -211,7 +211,6 @@ void showRowan(u8 index) {
 void introduceRowan(u8 index) {
 	//task *tasks = (task *) 0x3005090;
 
-	fade_ctrl *fade_control = (fade_ctrl *) 0x02037AB8;
 	u16 arg;
 	u8 mix_color;
 
@@ -288,7 +287,6 @@ void preRowanMultichoice(u8 index) {
 	char *dest = (char*) 0x02021D18;
 	u32 *okay = (u32*) 0x2020050;
 
-	u32 *textflags = (u32*) 0x03003E50;
 	u8 *prev_quest_mode = (u8*) 0x0203ADFA;
 	u8 b = 8;
 

@@ -4,6 +4,8 @@
 #include "../types.h"
 #include "../oakintro.h"
 
+u32 *textflags = (u32*) 0x03003E50;
+
 typedef struct rbox {
 	u8 bgid;
 	u8 x;

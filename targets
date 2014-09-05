@@ -2,6 +2,8 @@ bootstrap.s
 strings.csv
 main.c
 gender.c
+setup.c
+name.c
 engine/text.c
 images/lucas.c
 images/dawn.c

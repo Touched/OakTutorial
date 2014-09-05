@@ -4,6 +4,7 @@
 #include "engine/input.h"
 #include "engine/audio.h"
 #include "engine/text.h"
+#include "engine/player.h"
 #include "images/lucas.h"
 #include "images/dawn.h"
 #include "strings.h"
@@ -46,6 +47,8 @@ typedef struct genderState {
 } genderState;
 
 genderState *state = (genderState*) 0x0203B108;
+
+extern void namePlayer(u8 index);
 
 void lucas_callback(object *self) {
 	/* Check if lucas must be semi-transparent */
@@ -372,25 +375,12 @@ void repeatGender(u8 index) {
 	tasks[index].function = (u32) chooseGender;
 }
 
-typedef struct playerData {
-	char name[8];
-	u8 gender;
-	u8 unk;
-	u16 trainer_id;
-	u16 secret_id;
-	u16 hours;
-	u8 minutes;
-	u8 seconds;
-	u8 frames;
-	u8 unk2;
-	u16 options;
-} playerData;
-
 void setGender(u8 index) {
 	/*
 	 * Player confirmed their gender, write the choice.
 	 */
 
-	playerData **player = (playerData **) 0x0300500C;
 	(*player)->gender = state->choice;
+
+	tasks[index].function = (u32) namePlayer;
 }

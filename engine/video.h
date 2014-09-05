@@ -61,6 +61,19 @@ typedef struct resource {
 	u16 tag;
 } resource;
 
+typedef struct fade_ctrl {
+	u16 bg_pal;
+	u16 obj_pal;
+	u16 scale;
+	u16 color;
+	u8 field8;
+	u8 field9;
+	u8 fieldA;
+	u8 fieldB;
+} fade_ctrl;
+
+fade_ctrl *fade_control = (fade_ctrl *) 0x02037AB8;
+
 #define FRAME_END { 0xFFFF, 0 }
 #define FRAME_LOOP { 0xFFFE, 0 }
 
@@ -73,5 +86,12 @@ u8 object_load_palette(u32 *src);
 u8 object_display(u32 *temp, u16 x, u16 y, u8 b);
 void load_palette(u32 *src, u16 dest_offset, u16 length);
 void display_ioreg_set(u8 reg, u16 value);
+
+void gpu_tile_bg_drop_all_sets(u32 val);
+void bg_vram_setup(u8 unk, u32 *config, u8 layers);
+void bgid_set_tilemap(u8 bgid, u32 *tilemap);
+u32 bgid_mod_x_offset(u8 bgid, u32 delta, u8 mode); /* 0: override, 1: add, 0: sub */
+u32 bgid_mod_y_offset(u8 bgid, u32 delta, u8 mode); /* 0: override, 1: add, 0: sub */
+void gpu_sync_bg_show(u8 layer);
 
 #endif /* OBJECTS_H_ */

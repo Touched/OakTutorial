@@ -1,6 +1,8 @@
 #ifndef INPUT_H_
 #define INPUT_H_
 
+u8 check_a_pressed(u8 b);
+
 /*
  * High: Pressed
  * Low: Released

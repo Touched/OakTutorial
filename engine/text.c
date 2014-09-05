@@ -2,11 +2,11 @@
 
 void showMessage(char *message) {
 	char *dest = (char*) 0x02021D18;
-	u8 b = 0;
+	u8 speed = 1; /* 0: instant, 8: slow (default) */
 
 	loadMessageBox(0, 0);
 	fdecoder(dest, message);
-	box_related_one(0, 4, dest, b, 0, 2, 1, 3);
+	box_related_one(0, 4, dest, speed, 0, 2, 1, 3);
 
 	rboxid_to_vram(0, 3);
 }
