@@ -6,6 +6,7 @@
 #include "images/tileset.h"
 #include "engine/video.h"
 #include "engine/callback.h"
+#include "engine/script.h"
 
 extern void chooseGender(u8 index);
 void callback (u8 index);
@@ -51,13 +52,10 @@ void unfadeScreen();
 
 #define REG_DISPCNT         *(u16*)0x4000000
 
+void returnFromPlayerName(u8 index);
+
 void callback (u8 index) {
 	u16 arg;
-	//task *tasks = (task *) 0x3005090;
-
-	//0812EC98
-	//u16 (*bg_vram_setup)(u8, u32, u8) = (u16 (*)(void)) 0x08001658 + 1;
-	//bg_vram_setup(1, 0x8462E58, 3);
 
 	arg = tasks[index].args[6];
 
@@ -67,56 +65,33 @@ void callback (u8 index) {
 		u8 *ptr;
 		void *data;
 
-		//data = malloc_and_LZ77UnComp((void *) 0x08460CA4, &size);
 		data = malloc_and_LZ77UnComp((void *) backgroundTiles, &size);
 
 		gpu_copy_to_tileset(1, data, size , 0);
-		//void *data2 = malloc_and_LZ77UnComp((void *) backgroundMap, &size);
-		//gpu_copy_tilemap(1, (void *) 0x08460CE8, 0, 0);
 		gpu_copy_tilemap(1, backgroundMap, 0, 0);
 		gpu_pal_apply(backgroundPal, 0x00, 0x40);
 
 		bgid_send_tilemap(1);
-		
 
-		//bgid_send_tilemap(2);
-
-		/* Load oak */
-
-		gpu_pal_apply(0x084623AC, 0x60, 0x40);
-		LZ77UnCompVram(0x84623EC, 0x6000600);
-		data = malloc_and_clear(0x60);
-
-		/* Generate tilemap on the fly */
-		ptr = (u8*) data;
-		for (i = 0; i < 0x60; ++i) {
-			ptr[i] = i;
-		}
-
-		//bgid_fill_rectangle(2, 0, 0, 0, 0x20, 0x20, 0x10);
-
-		int (*func)(u8,u32*,u8,u8,u8,u8,u8,u8,u8,u8,u8,u8) = (int (*)(void)) 0x0800226C + 1;
-
-		/* BGID, tilemap, ?, ?, width, height ,x, y, width, height, ?, offset */
-		func(2, ptr, 0, 0, 8, 0xC, 0xB, 2, 8, 0xC, 0x10, 0x18);
+		free(data);
 
 		/* Partial unfade. Don't cover message box */
-		fadescreen(0xFFFFFFF0, 0x0, 0x10, 0x0, 0x0000);
-		song_play_for_text(0x0);
-
-		//gpu_sync_bg_show(2);
+		//fadescreen(0xFFFFFFF0, 0x0, 0x10, 0x0, 0x0000);
 
 		/* How long to wait - in frames? */
 		tasks[index].args[6] = 0x30;
 
+		//fadescreen(0xFFFFFFFF, 0x0, 0x10, 0x0, 0x0000);
+		fadescreen(0xFFFFFFFF, 0x10, 0x10, 0x0, 0x0000);
 
-		// free(data);
-
-		/* Next task */
-		//tasks[index].function = (u32) helloThere;
-
-		fadescreen(0xFFFFFFFF, 0x0, 0x10, 0x0, 0x0000);
-		tasks[index].function = (u32) showRowan;
+		switch(variables[0xC]) {
+		case 0:
+			tasks[index].function = (u32) showRowan;
+			break;
+		case 1:
+			tasks[index].function = (u32) returnFromPlayerName;
+			break;
+		}
 	} else {
 		tasks[index].args[6] -= 1;
 	}

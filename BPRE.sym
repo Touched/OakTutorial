@@ -22,7 +22,7 @@ LZ77UnCompVram = 0x081E3B6D;
 gpu_pal_apply = 0x080703ED;
 
 malloc_and_clear = 0x08002BB1;
-free = 0x08002BC4;
+free = 0x08002BC5;
 
 bgid_fill_rectangle = 0x08002555;
 

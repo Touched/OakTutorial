@@ -48,7 +48,8 @@ typedef struct genderState {
 	u8 dawnFrame;
 } genderState;
 
-genderState *state = (genderState*) 0x0203B108;
+genderState *state = (genderState*) 0x020370B8;
+//genderState *state = (genderState*) 0x0203B108;
 
 extern void namePlayer(u8 index);
 
@@ -451,6 +452,8 @@ void repeatGenderFree(u8 index) {
 	 * Destroy the objects and try again.
 	 */
 
+	int i =0;
+
 	if (tasks[index].args[6]) {
 		tasks[index].args[6] -= 1;
 		return;
@@ -463,11 +466,12 @@ void repeatGenderFree(u8 index) {
 	void (*gpu_pal_free_by_tag)(u16) = (void (*)(void)) 0x08008A30 + 1;
 	void (*gpu_tile_obj_free_by_tag)(u32*) = (void (*)(void)) 0x0800874C + 1;
 
-	object_free_all();
+//	object_free_all();
+	for (i = 0; i < 4; ++i)
+		((void (*)(u32*)) 0x08007805)(&objects[i]);
 
 	tasks[index].function = (u32) chooseGender;
 }
-
 
 void setGender(u8 index) {
 	/*

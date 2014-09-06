@@ -1,4 +1,5 @@
 #include "engine/callback.h"
+#include "engine/script.h"
 #include "images/background.h"
 
 typedef enum DMACTRL {
@@ -54,31 +55,22 @@ void super_callback_shit() {
 
 	u32 null = 0;
 	u8 state = super->multi_purpose_state_tracker;
+	void *data;
+	u32 size;
 
 	switch(state) {
 	case 0:
-		/* set vblank handler */
+		/* Clear the vblank handler */
 
-		//super->callback5_vblank = 0;
+		super->callback5_vblank = 0;
 
 		/*
-		 * Clear the VRAM, PAL RAM and OAM with DMA
+		 * Memset vram to 0
 		 */
 
-//		DMA3->dst = 0x06000000;
-//		DMA3->src = &null;
-//		DMA3->word_count = 0xC000;
-//		DMA3->control = 0x8100 | 0x80;
-//
-//		DMA3->dst = 0x07000000;
-//		DMA3->src = &null;
-//		DMA3->word_count = 0x100;
-//		DMA3->control = 0x8500 | 0x80;
-//
-//		DMA3->dst = 0x05000000;
-//		DMA3->src = &null;
-//		DMA3->word_count = 0x1FF;
-//		DMA3->control = 0x8100 | 0x80;
+		((void (*)(u32, u8, u32)) 0x081E5ED9)(0x05000000, 0, 0x400);
+		((void (*)(u32, u8, u32)) 0x081E5ED9)(0x06000000, 0, 0x18000);
+		((void (*)(u32, u8, u32)) 0x081E5ED9)(0x07000000, 0, 0x400);
 
 		/*
 		 * Clean up, free, etc.
@@ -86,10 +78,8 @@ void super_callback_shit() {
 
 		((void (*)(void)) 0x08070529)();
 		((void (*)(void)) 0x08087E65)();
-
 		((void (*)(void)) 0x08006B11)();
 		((void (*)(void)) 0x080088F1)();
-//
 		((void (*)(void)) 0x080F6809)();
 		break;
 	case 1:
@@ -131,27 +121,22 @@ void super_callback_shit() {
 		((void (*)(void)) 0x080F6C6D)();
 		((void (*)(void)) 0x080F6C99)();
 		break;
-
 	case 4:
-		break;
-	case 5:
-		break;
-	case 6:
 		/*
-		 * Set where to resume from
+		 * Load the generic callback, which will load the background of the
+		 * tutorial and decide where to go from there.
 		 */
 
-		//task_add((taskFunction) 0x08130465, 0);
 		task_add((taskFunction) callback, 0);
 		break;
-	case 7:
+	case 5:
 		oak_fade(1, 0, 0x10, 0);
 
 		display_ioreg_set(0, 0x1040);
 
 		gpu_sync_bg_show(0);
 		gpu_sync_bg_show(1);
-		gpu_sync_bg_show(2);
+		//gpu_sync_bg_show(2);
 
 		func(1);
 
