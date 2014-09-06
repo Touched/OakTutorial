@@ -58,3 +58,6 @@ bgid_mod_y_offset = 0x08001D09;
 
 task_add = 0x0807741D;
 set_callback2 = 0x08000545;
+
+rand = 0x08044EC9;
+srand = 0x08044EE9;
