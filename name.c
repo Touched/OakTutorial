@@ -4,6 +4,7 @@
 #include "engine/player.h"
 #include "engine/input.h"
 #include "engine/script.h"
+#include "engine/math.h"
 #include "images/background.h"
 #include "images/prof.h"
 #include "images/rival.h"
@@ -58,6 +59,11 @@ void test(u8 ow_num) {
 
 	npc_to_objtemplate(ow_num, (u32 *) 0x0800760C, &out, &value);
 }
+
+#define DEFAULT_NAMES_BOY 5
+char *defaultNamesBoy[] = { caBoyDefault1, caBoyDefault2, caBoyDefault3, caBoyDefault4, caBoyDefault5 };
+#define DEFAULT_NAMES_GIRL 5
+char *defaultNamesGirl[] = { caBoyDefault1, caBoyDefault2, caBoyDefault3, caBoyDefault4, caBoyDefault5 };
 
 void preRepeatGender(u8 index);
 void showNamePlayerScreen(u8 index);
@@ -140,6 +146,19 @@ void showNamePlayerScreen(u8 index) {
 	/*
 	 * Load a random default name into the player's name
 	 */
+
+	u16 random = rand();
+
+	if ((*player)->gender) {
+		random = mod(random, DEFAULT_NAMES_BOY);
+		/* strcpy */
+		((void (*)(char*, char*)) 0x08008D85)((*player)->name, defaultNamesBoy[random]);
+	} else {
+		random = mod(random, DEFAULT_NAMES_GIRL);
+		/* strcpy */
+		((void (*)(char*, char*)) 0x08008D85)((*player)->name, defaultNamesGirl[random]);
+	}
+
 
 	if (fade_control->color & 0x80)  {
 		//name_screen(NAME_PLAYER, (*player)->name, (*player)->gender, 0, 0, 0x08130C64 + 1);

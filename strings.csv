@@ -11,3 +11,8 @@ caConfirmBoy	All right, so you[']re a boy?
 caConfirmGirl	All right, so you[']re a girl?
 caAskName	Tell me, what is your name?\p
 caConfirmName	Your name is \vÀ?
+caBoyDefault1	Ash
+caBoyDefault2	Man
+caBoyDefault3	Van
+caBoyDefault4	Ban
+caBoyDefault5	Dan
