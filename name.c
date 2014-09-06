@@ -59,7 +59,7 @@ void test(u8 ow_num) {
 	npc_to_objtemplate(ow_num, (u32 *) 0x0800760C, &out, &value);
 }
 
-void chooseGender(u8 index);
+void preRepeatGender(u8 index);
 void showNamePlayerScreen(u8 index);
 void fadeForNamePlayerScreen(u8 index);
 void returnFromPlayerName(u8 index);
@@ -157,6 +157,7 @@ void returnFromPlayerName(u8 index) {
 	 */
 
 	display_ioreg_set(0x50, 0x2F00);
+	display_ioreg_set(0x52, 0x0F);
 
 	if ((*player)->gender) {
 		LOAD_STATIC_SPRITE(dawn, 0x77, 0x20);
@@ -191,11 +192,7 @@ void confirmPlayerNameHandler(u8 index) {
 		break;
 	case 1:
 		/* No */
-
-		for (i = 0; i < 2; ++i)
-			((void (*)(u32*)) 0x08007805)(&objects[i]);
-
-		tasks[index].function = (u32) chooseGender;
+		tasks[index].function = (u32) preRepeatGender;
 		hideMultichoice(id);
 		break;
 	}
