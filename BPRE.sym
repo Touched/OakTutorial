@@ -46,3 +46,15 @@ free_box = 0x0810F4D9;
 erase_box = 0x08003E3D;
 destroy_box = 0x80F6F55;
 multichoice_get_response = 0x0810FA05;
+
+npc_to_objtemplate = 0x0805E8E9;
+name_screen = 0x0809D955;
+
+gpu_tile_bg_drop_all_sets = 0x08001619;
+bg_vram_setup = 0x08001659;
+bgid_set_tilemap = 0x08001FA1;
+bgid_mod_x_offset = 0x08001B91;
+bgid_mod_y_offset = 0x08001D09;
+
+task_add = 0x0807741D;
+set_callback2 = 0x08000545;

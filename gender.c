@@ -13,7 +13,7 @@
 #define PARTIAL_FADE 0xA03
 
 /* How long fade ins of the big sprites will take */
-#define FADE_STEPS 0x5
+#define FADE_STEPS 0x3
 
 /* How long each running frame will be visible for */
 #define FRAME_DURATION 0xA
@@ -38,9 +38,11 @@ typedef struct genderState {
 	u32 dawnAnimate : 1;
 	u32 dawnOpaque : 1;
 	u32 dawnCenter : 1;
+	u32 dawnInvisible : 1;
 	u32 lucasAnimate : 1;
 	u32 lucasOpaque : 1;
 	u32 lucasCenter : 1;
+	u32 lucasInvisible : 1;
 	u32 choice : 1;
 	u8 lucasFrame;
 	u8 dawnFrame;
@@ -67,6 +69,11 @@ void lucas_callback(object *self) {
 		self->anim_frame = state->lucasFrame;
 	}
 
+	/*
+	 * Toggle visiblity
+	 */
+	self->bitfield2 = (self->bitfield2 & 0xFB) | (state->lucasInvisible ? 4 : 0);
+
 	if (state->lucasCenter) {
 		/* We must centre Lucas */
 		if (self->x > 0x77) {
@@ -92,6 +99,11 @@ void dawn_callback(object *self) {
 	} else {
 		self->anim_frame = state->dawnFrame;
 	}
+
+	/*
+	 * Toggle visiblity
+	 */
+	self->bitfield2 = (self->bitfield2 & 0xFB) | (state->dawnInvisible ? 4 : 0);
 
 	if (state->dawnCenter) {
 			/* We must centre Lucas */
@@ -150,12 +162,13 @@ void slideDawn(u8 index);
 void slideLucas(u8 index);
 void repeatGender(u8 index);
 void setGender(u8 index);
+void repeatGenderFree(u8 index);
+void preFadeDawn(u8 index);
+void preRepeatGender(u8 index);
 
 void chooseGender(u8 index) {
 	//loadBigSprite(&dawnGraphics, &dawnPalette, &dawnTop, &dawnBottom, 0x30, 0x20);
 	u16 ids = loadBigSprite(&lucasGraphics, &lucasPalette, &lucasTop, &lucasBottom, 0xC0, 0x20);
-
-	//*state = ids;
 
 	/* We use the semi-transparent OAM mode to select 1st target */
 	display_ioreg_set(0x50, 0x2F00);
@@ -165,13 +178,18 @@ void chooseGender(u8 index) {
 	tasks[index].args[7] = 0x10;
 	tasks[index].args[8] = 0x0;
 	tasks[index].function = (u32) fadeInLucas;
+
+	/*
+	 * Initialise the state
+	 */
+	state->choice = 0;
 }
 
 void fadeInLucas(u8 index) {
 	u16 bg = tasks[index].args[7];
 	u16 fg = tasks[index].args[8];
 
-	if (bg) {
+	if (fg < 0x10) {
 		if (!tasks[index].args[6]) {
 			tasks[index].args[7] = bg - 1;
 			tasks[index].args[8] = fg + 1;
@@ -185,17 +203,26 @@ void fadeInLucas(u8 index) {
 	} else {
 		/* Set Lucas to be opaque */
 		state->lucasOpaque = 1;
-		//state->lucasAnimate = 1;
 
-		/* Fade out again */
-		display_ioreg_set(0x52, 0x1F00);
-		tasks[index].args[6] = FADE_STEPS;
-		tasks[index].args[7] = 0x10;
-		tasks[index].args[8] = 0x0;
-
-		loadBigSprite(&dawnGraphics, &dawnPalette, &dawnTop, &dawnBottom, 0x30, 0x20);
-		tasks[index].function = (u32) fadeInDawn;
+		/*
+		 * This extra step is needed to avoid a momentary flash on Lucas's
+		 * part, caused by the bldcnt being reset before he becomes opaque.
+		 * The extra frame's wait will allow lucas's callback to be called once
+		 * and his object attributes will be correctly set.
+		 */
+		tasks[index].function = (u32) preFadeDawn;
 	}
+}
+
+void preFadeDawn(u8 index) {
+	/* Fade out again */
+	display_ioreg_set(0x52, 0x1F00);
+	tasks[index].args[6] = FADE_STEPS;
+	tasks[index].args[7] = 0x10;
+	tasks[index].args[8] = 0x0;
+
+	loadBigSprite(&dawnGraphics, &dawnPalette, &dawnTop, &dawnBottom, 0x30, 0x20);
+	tasks[index].function = (u32) fadeInDawn;
 }
 
 void fadeInDawn(u8 index) {
@@ -213,18 +240,30 @@ void fadeInDawn(u8 index) {
 			tasks[index].args[6] -= 1;
 		}
 	} else {
-		/* Do a half fade */
-		display_ioreg_set(0x52, PARTIAL_FADE);
+
+		tasks[index].args[6] = 0x1E;
 		tasks[index].function = (u32) genderChooser;
 	}
 }
 
 void genderChooser(u8 index) {
 	/*
+	 * Small delay here makes it look better.
+	 */
+
+	if (tasks[index].args[6] > 0 ) {
+		tasks[index].args[6] -= 1;
+	}
+
+	if (tasks[index].args[6] == 1) {
+		/* Do a half fade */
+		display_ioreg_set(0x52, PARTIAL_FADE);
+	}
+
+	/*
 	 * This task will run until the user presses 'A'.
 	 * It will check for button presses and set the appropriate state struct bits.
 	 */
-
 	if (buttons->left || buttons->right) {
 		/* Bundle into a single case, we only have two options anyway */
 		state->choice = !state->choice;
@@ -344,36 +383,91 @@ void confirmGenderChoiceHandler(u8 index) {
 		break;
 	case 1:
 		/* No */
-		tasks[index].function = (u32) repeatGender;
+		tasks[index].args[6] = FADE_STEPS;
+		tasks[index].args[7] = 0x0;
+		tasks[index].args[8] = 0x10;
+
+		/*
+		 * Allow fading out
+		 */
+
+		state->dawnOpaque = 0;
+		state->lucasOpaque = 0;
+
+		/*
+		 * Set the unchosen OAM to be invisible
+		 */
+
+		if (state->choice) state->lucasInvisible = 1;
+		else state->dawnInvisible = 1;
+
+		tasks[index].function = (u32) preRepeatGender;
+
 		hideMultichoice(id);
 		break;
 	}
 }
 
+void preRepeatGender(u8 index) {
+	/*
+	 * Reset the bldcnt to begin fadeout. We need this extra step here,
+	 * otherwise, Dawn/Lucas will momentarily flash after selecting "No".
+	 * Again, this gives time fall the callbacks to do their business and
+	 * properly hide the unchosen character.
+	 */
+	display_ioreg_set(0x52, 0x1F);
+
+	tasks[index].function = (u32) repeatGender;
+}
+
 void repeatGender(u8 index) {
+	/*
+	 * Fade out
+	 */
+
+	u16 bg = tasks[index].args[7];
+	u16 fg = tasks[index].args[8];
+
+	if (bg < 0x12) {
+			if (!tasks[index].args[6]) {
+				tasks[index].args[7] = bg + 1;
+				tasks[index].args[8] = (fg) ? (fg - 1) : 0;
+				display_ioreg_set(0x52, (bg << 8) | fg);
+
+				tasks[index].args[6] = FADE_STEPS;
+			} else {
+				tasks[index].args[6] -= 1;
+			}
+	} else {
+		display_ioreg_set(0x52, 0x1F00);
+
+		tasks[index].args[6] = 0x1E;
+		tasks[index].function = (u32) repeatGenderFree;
+	}
+}
+
+void repeatGenderFree(u8 index) {
 	/*
 	 * Destroy the objects and try again.
 	 */
 
-	//  obj_delete_and_free_associated_resources
+	if (tasks[index].args[6]) {
+		tasks[index].args[6] -= 1;
+		return;
+	}
 
-	// or gpu_pal_free_by_tag, gpu_tile_obj_free_by_tag
-	// obj_delete_all
+	state->dawnInvisible = 0;
+	state->lucasInvisible = 0;
 
 	void (*object_free_all)() = (void (*)(void)) 0x08007770 + 1;
 	void (*gpu_pal_free_by_tag)(u16) = (void (*)(void)) 0x08008A30 + 1;
 	void (*gpu_tile_obj_free_by_tag)(u32*) = (void (*)(void)) 0x0800874C + 1;
 
-//	gpu_pal_free_by_tag(0x200);
-//		gpu_pal_free_by_tag(0x1000);
-//		gpu_tile_obj_free_by_tag(&lucasTop);
-//		gpu_tile_obj_free_by_tag(&lucasBottom);
-//		gpu_tile_obj_free_by_tag(&dawnBottom);
-//		gpu_tile_obj_free_by_tag(&dawnTop);
 	object_free_all();
 
 	tasks[index].function = (u32) chooseGender;
 }
+
 
 void setGender(u8 index) {
 	/*

@@ -1,4 +1,5 @@
 #include "engine/callback.h"
+#include "images/background.h"
 
 typedef enum DMACTRL {
 	INCREMENT,

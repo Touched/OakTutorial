@@ -1,6 +1,9 @@
 #include "oakintro.h"
 #include "strings.h"
 #include "images/lucas.h"
+#include "images/tilemap.h"
+#include "images/background.h"
+#include "images/tileset.h"
 #include "engine/video.h"
 #include "engine/callback.h"
 
@@ -62,14 +65,22 @@ void callback (u8 index) {
 		u32 size;
 		u8 i;
 		u8 *ptr;
+		void *data;
 
-		void *data = malloc_and_LZ77UnComp((void *) 0x08460CA4, &size);
+		//data = malloc_and_LZ77UnComp((void *) 0x08460CA4, &size);
+		data = malloc_and_LZ77UnComp((void *) backgroundTiles, &size);
 
-		gpu_copy_to_tileset(1, data, size, 0);
-		gpu_copy_tilemap(1, (void *) 0x08460CE8, 0, 0);
+		gpu_copy_to_tileset(1, data, size , 0);
+		//void *data2 = malloc_and_LZ77UnComp((void *) backgroundMap, &size);
+		//gpu_copy_tilemap(1, (void *) 0x08460CE8, 0, 0);
+		gpu_copy_tilemap(1, backgroundMap, 0, 0);
+		gpu_pal_apply(backgroundPal, 0x00, 0x40);
 
 		bgid_send_tilemap(1);
 		
+
+		//bgid_send_tilemap(2);
+
 		/* Load oak */
 
 		gpu_pal_apply(0x084623AC, 0x60, 0x40);
@@ -93,7 +104,7 @@ void callback (u8 index) {
 		fadescreen(0xFFFFFFF0, 0x0, 0x10, 0x0, 0x0000);
 		song_play_for_text(0x0);
 
-		gpu_sync_bg_show(2);
+		//gpu_sync_bg_show(2);
 
 		/* How long to wait - in frames? */
 		tasks[index].args[6] = 0x30;
