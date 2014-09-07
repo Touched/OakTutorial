@@ -1,13 +1,13 @@
 
-//{{BLOCK(dawn)
+//{{BLOCK(lucasshrink)
 
 //======================================================================
 //
-//	dawn, 64x512@4, 
+//	lucasshrink, 64x512@4, 
 //	Transparent color : AD,DD,DD
 //	+ palette 256 entries, not compressed
 //	+ 512 tiles lz77 compressed
-//	Total size: 512 + 5832 = 6344
+//	Total size: 512 + 2388 = 2900
 //
 //	Time-stamp: 2014-09-07, 10:14:41
 //	Exported by Cearn's GBA Image Transmogrifier, v0.8.6
@@ -15,15 +15,15 @@
 //
 //======================================================================
 
-#ifndef GRIT_DAWN_H
-#define GRIT_DAWN_H
+#ifndef GRIT_LUCASSHRINK_H
+#define GRIT_LUCASSHRINK_H
 
-#define dawnTilesLen 5832
-extern const unsigned int dawnTiles[1458];
+#define lucasshrinkTilesLen 2388
+extern const unsigned int lucasshrinkTiles[597];
 
-#define dawnPalLen 512
-extern const unsigned short dawnPal[256];
+#define lucasshrinkPalLen 512
+extern const unsigned short lucasshrinkPal[256];
 
-#endif // GRIT_DAWN_H
+#endif // GRIT_LUCASSHRINK_H
 
-//}}BLOCK(dawn)
+//}}BLOCK(lucasshrink)

@@ -5,13 +5,13 @@
 #include "engine/input.h"
 #include "engine/script.h"
 #include "engine/math.h"
-#include "images/background.h"
-#include "images/prof.h"
-#include "images/rival.h"
-#include "images/dawn.h"
-#include "images/lucas.h"
+#include "../images/background.h"
+#include "../images/prof.h"
+#include "../images/rival.h"
+#include "../images/dawn.h"
+#include "../images/lucas.h"
 #include "global.h"
-#include "strings.h"
+#include "../strings.h"
 
 #define NAME_PLAYER 0
 #define NAME_RIVAL 4
@@ -399,7 +399,7 @@ void nameRivalChoiceHandler(u8 index) {
 		 * Picked a default name from the list
 		 */
 
-		strcpy(rivalName, defaultNamesRival[response]);
+		strcpy(rivalName, defaultNamesRival[response - 1]); /* Zero base index */
 		tasks[index].function = (u32) askRivalName;
 	}
 }

@@ -6,9 +6,9 @@
 #include "engine/text.h"
 #include "global.h"
 #include "engine/player.h"
-#include "images/lucas.h"
-#include "images/dawn.h"
-#include "strings.h"
+#include "../images/lucas.h"
+#include "../images/dawn.h"
+#include "../strings.h"
 
 /* What BLDALPHA will be set to when half faded */
 #define PARTIAL_FADE 0xA03

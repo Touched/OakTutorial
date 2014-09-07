@@ -1,11 +1,11 @@
 bootstrap.s
 strings.csv
-main.c
-gender.c
-setup.c
-name.c
-finish.c
-engine/text.c
+src/main.c
+src/gender.c
+src/setup.c
+src/name.c
+src/finish.c
+src/engine/text.c
 images/lucas.c
 images/lucasshrink.c
 images/dawn.c
