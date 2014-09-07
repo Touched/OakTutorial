@@ -11,6 +11,14 @@ typedef struct frame {
 	u16 duration;
 } frame;
 
+typedef struct rotscale_frame {
+	u16 scale_delta_x;
+	u16 scale_delta_y;
+	u8 rot_delta;
+	u8 duration;
+	u16 field_6;
+}  rotscale_frame;
+
 typedef struct sprite {
 	u16 attr0;
 	u16 attr1;
@@ -83,6 +91,7 @@ sprite *oamdata = (sprite*)0x07000000;
 u16 object_load_compressed_graphics(u32 *src);
 u16 object_load_graphics(u32 *src);
 u8 object_load_palette(u32 *src);
+u8 object_load_compressed_palette(u32 *src);
 u8 object_display(u32 *temp, u16 x, u16 y, u8 b);
 void load_palette(u32 *src, u16 dest_offset, u16 length);
 void display_ioreg_set(u8 reg, u16 value);
@@ -90,8 +99,14 @@ void display_ioreg_set(u8 reg, u16 value);
 void gpu_tile_bg_drop_all_sets(u32 val);
 void bg_vram_setup(u8 unk, u32 *config, u8 layers);
 void bgid_set_tilemap(u8 bgid, u32 *tilemap);
-u32 bgid_mod_x_offset(u8 bgid, u32 delta, u8 mode); /* 0: override, 1: add, 0: sub */
-u32 bgid_mod_y_offset(u8 bgid, u32 delta, u8 mode); /* 0: override, 1: add, 0: sub */
+u32 bgid_mod_x_offset(u8 bgid, u32 delta, u8 mode); /* 0: override, 1: add, 2: sub */
+u32 bgid_mod_y_offset(u8 bgid, u32 delta, u8 mode); /* 0: override, 1: add, 2: sub */
+
+s32 bgid_get_x_offset(u8 bgid);
+s32 bgid_get_y_offset(u8 bgid);
 void gpu_sync_bg_show(u8 layer);
+void gpu_sync_bg_hide(u8 layer);
+void gpu_bg_hide(u8 layer);
+void gpu_bg_show(u8 layer);
 
 #endif /* OBJECTS_H_ */

@@ -24,6 +24,7 @@ void unfadeBoy(u8 index);
 void unfadeGirl(u8 index);
 void boyGirl(u8 index);
 void returnFromRivalName(u8 index);
+void startTutorial(u8 index);
 
 u16 (*lcd_io_set)(u8, u16) = (u16 (*)(void)) 0x08000A38 + 1; 
 //
@@ -55,44 +56,62 @@ void unfadeScreen();
 
 void returnFromPlayerName(u8 index);
 
+void show_bg() {
+	void *data;
+	u32 size;
+
+	data = malloc_and_LZ77UnComp((void *) backgroundTiles, &size);
+
+	gpu_copy_to_tileset(1, data, size , 0);
+	gpu_copy_tilemap(1, backgroundMap, 0, 0);
+	gpu_pal_apply(backgroundPal, 0x00, 0x40);
+
+	bgid_send_tilemap(1);
+
+	free(data);
+}
+
 void callback (u8 index) {
 	u16 arg;
 
 	arg = tasks[index].args[6];
 
+	/*
+	 * Change 08460568 to 00 00 so that blue colour doesn't flash
+	 */
+
+
+	/*
+	 * First case. Simply fade to black and wait for the fade.
+	 */
+
 	if (!arg) {
-		u32 size;
+
 		u8 i;
 		u8 *ptr;
-		void *data;
 
-		data = malloc_and_LZ77UnComp((void *) backgroundTiles, &size);
-
-		gpu_copy_to_tileset(1, data, size , 0);
-		gpu_copy_tilemap(1, backgroundMap, 0, 0);
-		gpu_pal_apply(backgroundPal, 0x00, 0x40);
-
-		bgid_send_tilemap(1);
-
-		free(data);
-
-		/* Partial unfade. Don't cover message box */
-		//fadescreen(0xFFFFFFF0, 0x0, 0x10, 0x0, 0x0000);
-
+		show_bg();
 		/* How long to wait - in frames? */
 		tasks[index].args[6] = 0x30;
 
-		//fadescreen(0xFFFFFFFF, 0x0, 0x10, 0x0, 0x0000);
-		fadescreen(0xFFFFFFFF, 0x10, 0x10, 0x0, 0x0000);
-
 		switch(variables[0xC]) {
 		case 0:
-			tasks[index].function = (u32) showRowan;
+			/* Partial unfade. Don't cover message box */
+			fadescreen(0xFFFFFFF0, 0x0, 0x10, 0x0, 0x0000);
+
+			/*
+			 * Hide the background layer for now
+			 */
+			gpu_sync_bg_hide(1);
+			fadescreen(0xFFFFFFFF, 0x0, 0, 0x10, 0x0000);
+			tasks[index].function = (u32) startTutorial;
 			break;
 		case 1:
+			fadescreen(0xFFFFFFFF, 0x10, 0x10, 0x0, 0x0000);
 			tasks[index].function = (u32) returnFromPlayerName;
 			break;
 		case 2:
+			fadescreen(0xFFFFFFFF, 0x10, 0x10, 0x0, 0x0000);
 			tasks[index].function = (u32) returnFromRivalName;
 			break;
 		}

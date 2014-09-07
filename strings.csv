@@ -1,12 +1,16 @@
-caHelloThere	Hello there!\nIt[']s so very nice to meet you!\pWelcome to the world of Pokemon!\p
-caIntroduce	My name is Rowan.\pHowever, everyone just calls me\nthe Pokemon Professor.\pBefore I go any further, is this\nyour first adventure?\p
-caAdvice	If you need advice, I[']m certainly\ncapable of giving it.\p
+caHelloThere	Hello there!\nIt[']s so very nice to meet you!\pWelcome to the world of Pokémon!\p
+caIntroduce	My name is Rowan.\pHowever, everyone just calls me\nthe Pokémon Professor.\pBefore I go any further, is this\nyour first adventure?\pIf you need advice, I[']m certainly\ncapable of giving it.\p
+caAdvice	Dep
 caOptionInfoControls	CONTROL INFO
 caOptionInfoAdventure	ADVENTURE INFO
 caOptionInfoNone	NO INFO NEEDED
 caYes	YES
 caNo	NO
-caThisWorld	This world is widely inhabited by\ncreatures known as Pokemon.\p
+caPokeball	This world is widely inhabited by\ncreatures known as Pokémon.\pHere, I have a Poké Ball.\p
+caThisWorld	This world is widely inhabited by\ncreatures known as Pokémon.\p
+caFirstSpeech	We humans live alongside Pokémon\nas friends.\pAt times we play together,\nand at other times we\lwork together.\pSome people use their Pokémon\nto battle and develop\lcloser bonds with them.\pWhat do I do?\pI conduct research so that we may\nlearn more about Pokémon.\p
+caTellMe	Now, why don[']t you tell me\na little bit about yourself?\p
+caBoyOrGirl	Are you a boy?\nOr are you a girl?\p
 caConfirmBoy	All right, so you[']re a boy?
 caConfirmGirl	All right, so you[']re a girl?
 caAskName	Tell me, what is your name?\p
@@ -25,4 +29,4 @@ caRivalName3	Roy
 caRivalName4	Gavin
 caRivalName5	Diamond
 caConfirmRivalName	\vÉ, is it?\nThat[']s your friend[']s name?\p
-caFinalSpeech	All right, \vÀ, the time\nhas come.\pYour very own tale of grand\nadventure is about to unfold.\pOn your journey, you will meet\ncountless Pokemon and people.\pI[']m sure that along the way you will\ndiscover many things, perhaps even\lsomething about yourself.\pNow, go on, leap into the world of\nPokemon!\p
+caFinalSpeech	All right, \vÀ, the time\nhas come.\pYour very own tale of grand\nadventure is about to unfold.\pOn your journey, you will meet\ncountless Pokémon and people.\pI[']m sure that along the way you will\ndiscover many things, perhaps even\lsomething about yourself.\pNow, go on, leap into the world of\nPokémon!\p

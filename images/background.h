@@ -9,7 +9,7 @@
 //	+ regular map (in SBBs), lz77 compressed, 32x32 
 //	Total size: 512 + 52 + 284 = 848
 //
-//	Time-stamp: 2014-09-07, 10:14:41
+//	Time-stamp: 2014-09-07, 21:02:49
 //	Exported by Cearn's GBA Image Transmogrifier, v0.8.6
 //	( http://www.coranac.com/projects/#grit )
 //

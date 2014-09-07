@@ -5,11 +5,13 @@ src/gender.c
 src/setup.c
 src/name.c
 src/finish.c
+src/intro.c
 src/engine/text.c
 images/lucas.c
 images/lucasshrink.c
 images/dawn.c
 images/dawnshrink.c
 images/prof.c
+images/prof8bpp.c
 images/rival.c
 images/background.c

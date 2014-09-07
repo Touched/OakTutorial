@@ -5,4 +5,5 @@ wine grit images/dawnshrink.png -gzl -gB 4 -gT 0xaddddd -ftc -o images/dawnshrin
 wine grit images/lucasshrink.png -gzl -gB 4 -gT 0xaddddd -ftc -o images/lucasshrink.h
 wine grit images/dawn.png -gzl -gB 4 -gT 0xaddddd -ftc -o images/dawn.h
 wine grit images/prof.png -gzl -gB 4 -gT 0xaddddd -ftc -o images/prof.h
+wine grit84 images/prof.png -gzl -gB 8 -gT 0xaddddd -ftc -o images/prof8bpp.h
 wine grit images/rival.png -gzl -gB 4 -gT 0xaddddd -ftc -o images/rival.h

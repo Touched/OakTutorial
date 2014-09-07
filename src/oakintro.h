@@ -24,6 +24,5 @@ void *malloc_and_clear(u32 size);
 void bgid_fill_rectangle(u8 bgid, u16 x, u8 y, u8 y2, u8 b1, u8 b2, u8 b3);
 void free(void *ptr);
 
-void textbox_close();
 
 #endif

@@ -68,9 +68,9 @@ void super_callback_shit() {
 		 * Memset vram to 0
 		 */
 
-		((void (*)(u32, u8, u32)) 0x081E5ED9)(0x05000000, 0, 0x400);
-		((void (*)(u32, u8, u32)) 0x081E5ED9)(0x06000000, 0, 0x18000);
-		((void (*)(u32, u8, u32)) 0x081E5ED9)(0x07000000, 0, 0x400);
+		//((void (*)(u32, u8, u32)) 0x081E5ED9)(0x05000000, 0, 0x400);
+		//((void (*)(u32, u8, u32)) 0x081E5ED9)(0x06000000, 0, 0x18000);
+		//((void (*)(u32, u8, u32)) 0x081E5ED9)(0x07000000, 0, 0x400);
 
 		/*
 		 * Clean up, free, etc.
@@ -145,6 +145,7 @@ void super_callback_shit() {
 		 */
 		super->callback5_vblank = 0x0812EAFC + 1;
 
+		//fadescreen(0xFFFFFFFF, 0x0, 0, 0x10, 0x0000);
 		set_callback2((callbackFunction) 0x0812EB11);
 		return;
 	}

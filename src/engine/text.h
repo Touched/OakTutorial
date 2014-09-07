@@ -27,6 +27,7 @@ int outline_box(u16, u8, u16, u8);
 int clear_box(u16, u8);
 
 int free_box(u8 id);
+void textbox_close();
 int erase_box(u16);
 int destroy_box(u8, u8);
 s8 multichoice_get_response(); /* Returns -1 if no choice yet */
