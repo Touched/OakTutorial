@@ -62,3 +62,5 @@ set_callback2 = 0x08000545;
 rand = 0x08044EC9;
 srand = 0x08044EE9;
 mod = 0x081E4685;
+
+strcpy = 0x08008D85;

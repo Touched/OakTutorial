@@ -10,6 +10,7 @@
 #include "images/rival.h"
 #include "images/dawn.h"
 #include "images/lucas.h"
+#include "global.h"
 #include "strings.h"
 
 #define NAME_PLAYER 0
@@ -64,6 +65,8 @@ void test(u8 ow_num) {
 char *defaultNamesBoy[] = { caBoyDefault1, caBoyDefault2, caBoyDefault3, caBoyDefault4, caBoyDefault5 };
 #define DEFAULT_NAMES_GIRL 5
 char *defaultNamesGirl[] = { caBoyDefault1, caBoyDefault2, caBoyDefault3, caBoyDefault4, caBoyDefault5 };
+#define DEFAULT_NAMES_RIVAL 5
+char *defaultNamesRival[] = { caRivalName1, caRivalName2, caRivalName3, caRivalName4, caRivalName5 };
 
 void preRepeatGender(u8 index);
 void showNamePlayerScreen(u8 index);
@@ -71,8 +74,22 @@ void fadeForNamePlayerScreen(u8 index);
 void returnFromPlayerName(u8 index);
 void confirmPlayerName(u8 index);
 void confirmPlayerNameHandler(u8 index);
-void setPlayerName(u8 index);
+void fadeOutPlayer(u8 index);
 void profIntroduceRival(u8 index);
+void fadeProfOut(u8 index);
+void fadeRivalIn(u8 index);
+void nameRival(u8 index);
+void slideRival(u8 index);
+void nameRivalChoiceHandler(u8 index);
+void askRivalName(u8 index);
+void confirmRivalName(u8 index);
+void confirmRivalNameHandler(u8 index);
+void fadeRivalOut(u8 index);
+void fadeProfInLastTime(u8 index);
+void profFinalSpeech(u8 index);
+void letsGo(u8 index);
+void fadeInPlayerLastTime(u8 index);
+void fadeProfOutLastTime(u8 index);
 
 void namePlayer(u8 index) {
 	showMessage(caAskName);
@@ -101,7 +118,7 @@ frame *pAnimBottomStatic[] = { still2 };
 sprite oam = { 0x400, 0xC000, 0x800, 0x0 };
 
 void static_callback(object *self) {
-	self->final_oam.attr0 |= 0x400;
+	//self->final_oam.attr0 |= 0x400;
 }
 
 /* Prof */
@@ -151,23 +168,19 @@ void showNamePlayerScreen(u8 index) {
 
 	if ((*player)->gender) {
 		random = mod(random, DEFAULT_NAMES_BOY);
-		/* strcpy */
-		((void (*)(char*, char*)) 0x08008D85)((*player)->name, defaultNamesBoy[random]);
+		strcpy((*player)->name, defaultNamesBoy[random]);
 	} else {
 		random = mod(random, DEFAULT_NAMES_GIRL);
-		/* strcpy */
-		((void (*)(char*, char*)) 0x08008D85)((*player)->name, defaultNamesGirl[random]);
+		strcpy((*player)->name, defaultNamesGirl[random]);
 	}
-
 
 	if (fade_control->color & 0x80)  {
 		//name_screen(NAME_PLAYER, (*player)->name, (*player)->gender, 0, 0, 0x08130C64 + 1);
+		variables[0xC] = 1;
 		name_screen(NAME_PLAYER, (*player)->name, (*player)->gender, 0, 0, super_callback_shit);
  	}
 
 	((void (*)(u8, u8)) 0x08131169)(index, 1);
-
-	variables[0xC] = 1;
 }
 
 void returnFromPlayerName(u8 index) {
@@ -206,22 +219,361 @@ void confirmPlayerNameHandler(u8 index) {
 	switch(multichoice_get_response()) {
 	case 0:
 		/* Yes */
-		tasks[index].function = (u32) setPlayerName;
+		tasks[index].function = (u32) fadeOutPlayer;
 		hideMultichoice(id);
 		break;
 	case 1:
 		/* No */
+		tasks[index].args[6] = FADE_STEPS;
+		tasks[index].args[7] = 0x0;
+		tasks[index].args[8] = 0x10;
 		tasks[index].function = (u32) preRepeatGender;
 		hideMultichoice(id);
 		break;
 	}
 }
 
-void setPlayerName(u8 index) {
+void fadeOutPlayer(u8 index) {
+	u16 bg = tasks[index].args[7];
+	u16 fg = tasks[index].args[8];
 
+	if (bg < 0x12) {
+			if (!tasks[index].args[6]) {
+				tasks[index].args[7] = bg + 1;
+				tasks[index].args[8] = (fg) ? (fg - 1) : 0;
+				display_ioreg_set(0x52, (bg << 8) | fg);
+
+				tasks[index].args[6] = FADE_STEPS;
+			} else {
+				tasks[index].args[6] -= 1;
+			}
+	} else {
+		int i;
+		display_ioreg_set(0x52, 0x1F00);
+
+		/*
+		 * Free all the objects
+		 */
+		for (i = 0; i < 2; ++i)
+			((void (*)(u32*)) 0x08007805)(&objects[i]);
+
+		LOAD_STATIC_SPRITE(prof, 0x77, 0x20);
+
+		tasks[index].args[6] = FADE_STEPS;
+		tasks[index].args[7] = 0x10;
+		tasks[index].args[8] = 0x0;
+		tasks[index].function = (u32) profIntroduceRival;
+	}
 }
 
 void profIntroduceRival(u8 index) {
+	u16 bg = tasks[index].args[7];
+	u16 fg = tasks[index].args[8];
+
+	if (fg < 0x10) {
+		if (!tasks[index].args[6]) {
+			tasks[index].args[7] = bg - 1;
+			tasks[index].args[8] = fg + 1;
+			display_ioreg_set(0x52, (bg << 8) | fg);
+
+			tasks[index].args[6] = FADE_STEPS;
+		} else {
+			tasks[index].args[6] -= 1;
+		}
+
+	} else {
+		showMessage(caIntroduceRival);
+		tasks[index].args[6] = FADE_STEPS;
+		tasks[index].args[7] = 0x0;
+		tasks[index].args[8] = 0x10;
+		tasks[index].function = (u32) fadeProfOut;
+	}
 }
 
+void fadeProfOut(u8 index) {
+	u16 bg = tasks[index].args[7];
+	u16 fg = tasks[index].args[8];
+
+	/* Wait for A press */
+	if (check_a_pressed(0)) return;
+
+	textbox_close();
+
+	if (bg < 0x12) {
+		if (!tasks[index].args[6]) {
+			tasks[index].args[7] = bg + 1;
+			tasks[index].args[8] = (fg) ? (fg - 1) : 0;
+			display_ioreg_set(0x52, (bg << 8) | fg);
+
+			tasks[index].args[6] = FADE_STEPS;
+		} else {
+			tasks[index].args[6] -= 1;
+		}
+	} else {
+		int i;
+		display_ioreg_set(0x52, 0x1F00);
+
+		/*
+		 * Free all the objects
+		 */
+		for (i = 0; i < 2; ++i)
+			((void (*)(u32*)) 0x08007805)(&objects[i]);
+
+		LOAD_STATIC_SPRITE(rival, 0x77, 0x20);
+
+		tasks[index].args[6] = FADE_STEPS;
+		tasks[index].args[7] = 0x10;
+		tasks[index].args[8] = 0x0;
+		tasks[index].function = (u32) fadeRivalIn;
+	}
+}
+
+void fadeRivalIn(u8 index) {
+	u16 bg = tasks[index].args[7];
+	u16 fg = tasks[index].args[8];
+
+	if (fg < 0x10) {
+		if (!tasks[index].args[6]) {
+			tasks[index].args[7] = bg - 1;
+			tasks[index].args[8] = fg + 1;
+			display_ioreg_set(0x52, (bg << 8) | fg);
+
+			tasks[index].args[6] = FADE_STEPS;
+		} else {
+			tasks[index].args[6] -= 1;
+		}
+
+	} else {
+		showMessage(caAskRivalName);
+		tasks[index].args[6] = FADE_STEPS;
+		tasks[index].args[7] = 0x0;
+		tasks[index].args[8] = 0x10;
+		tasks[index].function = (u32) nameRival;
+	}
+}
+
+void nameRival(u8 index) {
+	/* Wait for A press */
+	if (check_a_pressed(0)) return;
+
+	tasks[index].function = (u32) slideRival;
+}
+
+void slideRival(u8 index) {
+	/*
+	 * TODO: Change the indices so that they aren't hard-coded
+	 */
+
+	if (objects[0].x < 0xC0) {
+		objects[0].x += SLIDE_STEP;
+		objects[1].x += SLIDE_STEP;
+		return;
+	}
+
+	char *choices[] = { caRivalCustom, caRivalName1, caRivalName2, caRivalName3, caRivalName4, 0 };
+
+	rbox box = {0, 2, 2, 9, 10, 0xF, 0x130};
+	tasks[index].args[0xD] = showMultichoice(&box, choices);
+
+	tasks[index].function = (u32) nameRivalChoiceHandler;
+}
+
+void nameRivalChoiceHandler(u8 index) {
+	u32 *saveBlock = 0x03005008;
+	u32 *rivalName = *saveBlock + 0x3A4C;
+	s8 response = multichoice_get_response();
+
+	if (response == 0) {
+		/*
+		 * Custom name
+		 */
+
+		u16 random = rand();
+		random = mod(random, DEFAULT_NAMES_GIRL);
+		strcpy(rivalName, defaultNamesRival[random]);
+
+		variables[0xC] = 2;
+		name_screen(NAME_RIVAL, rivalName, 4, 0, 0, super_callback_shit);
+	} else if (response > 0){
+		/*
+		 * Picked a default name from the list
+		 */
+
+		strcpy(rivalName, defaultNamesRival[response]);
+		tasks[index].function = (u32) askRivalName;
+	}
+}
+
+void askRivalName(u8 index) {
+	/*
+	 * Slide to centre
+	 */
+	hideMultichoice(tasks[index].args[0xD]);
+
+	if (objects[0].x > 0x77) {
+			objects[0].x -= SLIDE_STEP;
+			objects[1].x -= SLIDE_STEP;
+			return;
+	}
+	showMessage(caConfirmRivalName);
+
+	tasks[index].function = (u32) confirmRivalName;
+}
+
+void returnFromRivalName(u8 index) {
+	/*
+	 * IO registers were cleared after return. Reset BLDCNT
+	 */
+
+	display_ioreg_set(0x50, 0x2F00);
+	display_ioreg_set(0x52, 0x0F);
+
+	LOAD_STATIC_SPRITE(rival, 0x77, 0x20);
+	showMessage(caConfirmRivalName);
+
+	tasks[index].function = (u32) confirmRivalName;
+}
+
+void confirmRivalName(u8 index) {
+	if (check_a_pressed(0)) return;
+	tasks[index].args[0xD] = showYesNo();
+	tasks[index].function = (u32) confirmRivalNameHandler;
+}
+
+void confirmRivalNameHandler(u8 index) {
+	switch (multichoice_get_response()) {
+	case 0:
+		hideMultichoice(tasks[index].args[0xD]);
+		tasks[index].args[6] = FADE_STEPS;
+		tasks[index].args[7] = 0x0;
+		tasks[index].args[8] = 0x10;
+		tasks[index].function = (u32) fadeRivalOut;
+		break;
+	case 1:
+		hideMultichoice(tasks[index].args[0xD]);
+		showMessage(caAskRivalName);
+		tasks[index].function = (u32) nameRival;
+		break;
+	}
+}
+
+void fadeRivalOut(u8 index) {
+	u16 bg = tasks[index].args[7];
+	u16 fg = tasks[index].args[8];
+
+	if (bg < 0x12) {
+		if (!tasks[index].args[6]) {
+			tasks[index].args[7] = bg + 1;
+			tasks[index].args[8] = (fg) ? (fg - 1) : 0;
+			display_ioreg_set(0x52, (bg << 8) | fg);
+
+			tasks[index].args[6] = FADE_STEPS;
+		} else {
+			tasks[index].args[6] -= 1;
+		}
+	} else {
+		int i;
+		for (i = 0; i < 2; ++i)
+			((void (*)(u32*)) 0x08007805)(&objects[i]);
+
+		LOAD_STATIC_SPRITE(prof, 0x77, 0x20);
+		tasks[index].args[6] = FADE_STEPS;
+		tasks[index].args[7] = 0x10;
+		tasks[index].args[8] = 0x0;
+		tasks[index].function = (u32) fadeProfInLastTime;
+	}
+}
+
+void fadeProfInLastTime(u8 index) {
+	u16 bg = tasks[index].args[7];
+	u16 fg = tasks[index].args[8];
+
+	if (fg < 0x10) {
+		if (!tasks[index].args[6]) {
+			tasks[index].args[7] = bg - 1;
+			tasks[index].args[8] = fg + 1;
+			display_ioreg_set(0x52, (bg << 8) | fg);
+
+			tasks[index].args[6] = FADE_STEPS;
+		} else {
+			tasks[index].args[6] -= 1;
+		}
+
+	} else {
+		showMessage(caIntroduceRival);
+		tasks[index].args[6] = FADE_STEPS;
+		tasks[index].args[7] = 0x0;
+		tasks[index].args[8] = 0x10;
+		tasks[index].function = (u32) profFinalSpeech;
+	}
+}
+
+void profFinalSpeech(u8 index) {
+	showMessage(caFinalSpeech);
+
+	tasks[index].args[6] = FADE_STEPS;
+	tasks[index].args[7] = 0x0;
+	tasks[index].args[8] = 0x10;
+	tasks[index].function = (u32) fadeProfOutLastTime;
+}
+
+void fadeProfOutLastTime(u8 index) {
+	u16 bg = tasks[index].args[7];
+	u16 fg = tasks[index].args[8];
+
+	if (!tasks[index].args[7]) {
+		/*
+		 * First round of this callback
+		 */
+
+		if (check_a_pressed(0)) return;
+		textbox_close();
+
+		/* Fade music out */
+		((void (*)(u8))0x8071D65)(4);
+	}
+
+	if (bg < 0x12) {
+			if (!tasks[index].args[6]) {
+				tasks[index].args[7] = bg + 1;
+				tasks[index].args[8] = (fg) ? (fg - 1) : 0;
+				display_ioreg_set(0x52, (bg << 8) | fg);
+
+				tasks[index].args[6] = FADE_STEPS;
+			} else {
+				tasks[index].args[6] -= 1;
+			}
+	} else {
+		int i;
+		display_ioreg_set(0x52, 0x1F00);
+
+		/*
+		 * Free all the objects
+		 */
+		for (i = 0; i < 2; ++i)
+			((void (*)(u32*)) 0x08007805)(&objects[i]);
+
+		tasks[index].args[6] = FADE_STEPS;
+		tasks[index].args[7] = 0x10;
+		tasks[index].args[8] = 0x0;
+		tasks[index].function = (u32) letsGo;
+	}
+}
+
+void letsGo(u8 index) {
+	/*
+	 * Load the player graphics
+	 */
+
+	if ((*player)->gender) {
+		LOAD_STATIC_SPRITE(dawn, 0x77, 0x20);
+	} else {
+		LOAD_STATIC_SPRITE(lucas, 0x77, 0x20);
+	}
+
+	tasks[index].args[6] = FADE_STEPS;
+	tasks[index].args[7] = 0x10;
+	tasks[index].args[8] = 0x0;
+	tasks[index].function = (u32) fadeInPlayerLastTime;
+}
 

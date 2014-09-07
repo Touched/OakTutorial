@@ -1,4 +1,6 @@
 #include "text.h"
+char caYes[] = { 0xd3, 0xbf, 0xcd, 0xff };
+char caNo[] = { 0xc8, 0xc9, 0xff };
 
 void showMessage(char *message) {
 	char *dest = (char*) 0x02021D18;
@@ -46,6 +48,13 @@ u16 showMultichoice(rbox *box, char **choices) {
 	rboxid_to_vram(id, 3);
 
 	return id;
+}
+
+u16 showYesNo() {
+	char *choices[] = { caYes, caNo, 0 };
+
+	rbox box = {0, 2, 2, 4, 4, 0xF, 0x130};
+	return showMultichoice(&box, choices);
 }
 
 void hideMultichoice(u16 id) {

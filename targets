@@ -4,9 +4,12 @@ main.c
 gender.c
 setup.c
 name.c
+finish.c
 engine/text.c
 images/lucas.c
+images/lucasshrink.c
 images/dawn.c
+images/dawnshrink.c
 images/prof.c
 images/rival.c
 images/background.c

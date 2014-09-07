@@ -23,6 +23,7 @@ void preChooseGender(u8 index);
 void unfadeBoy(u8 index);
 void unfadeGirl(u8 index);
 void boyGirl(u8 index);
+void returnFromRivalName(u8 index);
 
 u16 (*lcd_io_set)(u8, u16) = (u16 (*)(void)) 0x08000A38 + 1; 
 //
@@ -90,6 +91,9 @@ void callback (u8 index) {
 			break;
 		case 1:
 			tasks[index].function = (u32) returnFromPlayerName;
+			break;
+		case 2:
+			tasks[index].function = (u32) returnFromRivalName;
 			break;
 		}
 	} else {

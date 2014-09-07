@@ -4,6 +4,7 @@
 #include "engine/input.h"
 #include "engine/audio.h"
 #include "engine/text.h"
+#include "global.h"
 #include "engine/player.h"
 #include "images/lucas.h"
 #include "images/dawn.h"
@@ -12,14 +13,8 @@
 /* What BLDALPHA will be set to when half faded */
 #define PARTIAL_FADE 0xA03
 
-/* How long fade ins of the big sprites will take */
-#define FADE_STEPS 0x3
-
 /* How long each running frame will be visible for */
 #define FRAME_DURATION 0xA
-
-/* Define how much the sprites will slide each frame */
-#define SLIDE_STEP 2
 
 /* Individual animations. Pair for each half */
 frame anim[] = { { 0x0, FRAME_DURATION }, { 0x100, FRAME_DURATION }, { 0x80, FRAME_DURATION }, { 0x180, FRAME_DURATION }, { 0xFFFE, 0 } };

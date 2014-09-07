@@ -2,10 +2,12 @@
 
 import os
 import glob
+import sys
 from PIL import Image
 
-name = 'dawn'
-order = ['1', '3', '2', '4']
+name = sys.argv[1]
+num = int(sys.argv[2])
+order = [str(i + 1) for i in range(num)]
 
 frames = {}
 

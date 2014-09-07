@@ -16,3 +16,13 @@ caBoyDefault2	Man
 caBoyDefault3	Van
 caBoyDefault4	Ban
 caBoyDefault5	Dan
+caIntroduceRival	OK[...]\nSo, you[']re \vÀ?\pA fine name that is!\pNow, this boy here[...]\nI believe he[']s your friend.\p
+caAskRivalName	What might his name be?\p
+caRivalCustom	New Name!
+caRivalName1	Barry
+caRivalName2	Nolan
+caRivalName3	Roy
+caRivalName4	Gavin
+caRivalName5	Diamond
+caConfirmRivalName	\vÉ, is it?\nThat[']s your friend[']s name?\p
+caFinalSpeech	All right, \vÀ, the time\nhas come.\pYour very own tale of grand\nadventure is about to unfold.\pOn your journey, you will meet\ncountless Pokemon and people.\pI[']m sure that along the way you will\ndiscover many things, perhaps even\lsomething about yourself.\pNow, go on, leap into the world of\nPokemon!\p
