@@ -38,6 +38,7 @@ object_load_compressed_graphics = 0x0800EBCD;
 object_load_graphics = 0x080086DD;
 object_load_palette = 0x08008929;
 object_load_compressed_palette = 0x0800F079;
+object_delete_and_free = 0x08007805;
 object_display = 0x08006F8D;
 load_palette = 0x080703ED;
 display_ioreg_set = 0x08000A39;
@@ -71,3 +72,9 @@ srand = 0x08044EE9;
 mod = 0x081E4685;
 
 strcpy = 0x08008D85;
+gmemset = 0x081E5ED9;
+
+multichoice_field = 0x080F79D9;
+multichoice_prepare = 0x0810F7D9;
+print_string = 0x0812E51D;
+

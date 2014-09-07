@@ -3,6 +3,7 @@
 #include "engine/video.h"
 #include "engine/callback.h"
 #include "engine/text.h"
+#include "engine/input.h"
 #include "engine/script.h"
 #include "global.h"
 
@@ -59,7 +60,6 @@ void fadeInProfBg(u8 index) {
 	/*
 	 * Tilemap dimensions
 	 */
-	u16 x, y, w, h;
 	u8 *tilemap;
 	u16 i, j, k;
 	u32 size;
@@ -70,8 +70,7 @@ void fadeInProfBg(u8 index) {
 	 * Allocated enough space for a full screen tilemap
 	 */
 	tilemap = (u8*) malloc_and_clear(SCREEN_SIZE);
-	// memset to blank tile
-	((void (*)(u32, u8, u32)) 0x081E5ED9)(tilemap, PROF_MAP_BASE, SCREEN_SIZE);
+	gmemset(tilemap, 0xFF, SCREEN_SIZE);
 
 	/*
 	 * Generate the tilemap on the fly
@@ -84,7 +83,7 @@ void fadeInProfBg(u8 index) {
 	/*
 	 * Unpack the professor graphics
 	 */
-	data = malloc_and_LZ77UnComp(profTiles, &size);
+	data = malloc_and_LZ77UnComp((void *) profTiles, &size);
 	config.SrcNum = size;
 
 	/*
@@ -101,8 +100,8 @@ void fadeInProfBg(u8 index) {
 	/*
 	 * Copy professor graphics to the map base of BG2
 	 */
-	bitUnPack(data, (void*) 0x06000600, &config);
-	gpu_pal_apply(profPal, 0x40, 0x40);
+	bitUnPack(data, (void *) 0x06000600, &config);
+	gpu_pal_apply((void *) profPal, 0x40, 0x40);
 	free(data);
 
 	bgid_set_tilemap(2, tilemap);
@@ -220,7 +219,7 @@ sprite oam = { 0x000, 0x4000, 0x800, 0x0 };
 /* Pokeball */
 resource *pokeballGraphics = (resource*) 0x0826056C;
 resource *pokeballPalette = (resource*) 0x082605CC;
-template pokeballTemplate = { 0xD6D8, 0xD6D8, 0x0826062C, &pAnimPokeball, 0, &pAnimRoll, pokeball_callback };
+template pokeballTemplate = { 0xD6D8, 0xD6D8, (sprite*) 0x0826062C, pAnimPokeball, 0, pAnimRoll, pokeball_callback };
 //template *pokeballTemplate = (template*) 0x082606F4;
 
 void profThisWorld(u8 index) {
@@ -238,13 +237,13 @@ void pokeballRoll(u8 index) {
 	 * Close the box, and load the graphics.
 	 */
 	textbox_close();
-	object_load_compressed_graphics((u32*) pokeballGraphics);
-	object_load_compressed_palette((u32*) pokeballPalette);
+	object_load_compressed_graphics(pokeballGraphics);
+	object_load_compressed_palette(pokeballPalette);
 
 	/*
 	 * Callback takes care of the roll, all we need to do is display
 	 */
-	object_display((u32*) &pokeballTemplate, 0x60 , 0x75, 1);
+	object_display(&pokeballTemplate, 0x60 , 0x75, 1);
 	//((void (*)(u8)) 0x08130F2D)(index);
 
 
@@ -334,14 +333,12 @@ void pokemon_callback(object *self) {
 sprite pokeoam = { 0x500, 0xC000, 0x400, 0x0 };
 resource *pokemonGraphics = (resource*) POKEMON_FRONT_SPRITE;
 resource *pokemonPalette = (resource*) POKEMON_PALETTE;
-template pokemonTemplate = { PROFESSOR_POKEMON, PROFESSOR_POKEMON, &pokeoam, 0x08231CF0, 0x82346F8, 0x08234944, pokemon_callback };
+template pokemonTemplate = { PROFESSOR_POKEMON, PROFESSOR_POKEMON, &pokeoam, (frame **) 0x08231CF0, (u32 *) 0x82346F8, (rotscale_frame **) 0x08234944, pokemon_callback };
 
 void pokeballOpen(u8 index) {
 	/*
 	 * Wait
 	 */
-
-	void *dst;
 
 	if (tasks[index].args[6]) {
 		tasks[index].args[6] -= 1;
@@ -396,7 +393,7 @@ void releaseTheBunny(u8 index) {
 
 	display_ioreg_set(0x52, 0x1F);
 
-	((void (*)(u32,u8)) 0x0800843D)(&objects[1], 1);
+	//((void (*)(u32,u8)) 0x0800843D)(&objects[1], 1);
 
 	tasks[index].args[6] = 0x20;
 	tasks[index].function = (u32) freePokeBall;
@@ -408,7 +405,7 @@ void freePokeBall(u8 index) {
 		return;
 	}
 
-	((void (*)(u32*)) 0x08007805)(&objects[0]);
+	object_delete_and_free(&objects[0]);
 	tasks[index].function = (u32) waitForJumpingFinish;
 }
 
@@ -447,7 +444,7 @@ void fadeBunny(u8 index) {
 		 */
 		u8 i;
 		for (i = 0; i < 4; ++i)
-			((void (*)(u32*)) 0x08007805)(&objects[i]);
+			object_delete_and_free(&objects[i]);
 
 		tasks[index].function = (u32) explainYourself;
 	}
@@ -464,7 +461,7 @@ void profFadeOutAndFree(u8 index) {
 	/*
 	 * Use built in function to fade professor
 	 */
-	u16 (*fade)(u8, u8) = (u16 (*)(void)) 0x0813144C + 1;
+	u16 (*fade)(u8, u8) = (u16 (*)(u8,u8)) 0x0813144C + 1;
 	fade(index, 2);
 
 	showMessage(caBoyOrGirl);

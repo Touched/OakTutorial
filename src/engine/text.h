@@ -21,7 +21,7 @@ u16 showMultichoice(rbox *box, char **choices);
 u16 showYesNo();
 void hideMultichoice(u16 id);
 
-u16 load_rbox(u32);
+u16 load_rbox(rbox*);
 u16 fix_box(u16);
 int outline_box(u16, u8, u16, u8);
 int clear_box(u16, u8);
@@ -32,7 +32,8 @@ int erase_box(u16);
 int destroy_box(u8, u8);
 s8 multichoice_get_response(); /* Returns -1 if no choice yet */
 
-void strcpy(char *dst, char *src);
+char *strcpy(char *dst, const char *src);
+void *gmemset(void *ptr, u8 value, u32 num);
 
 
 #endif /* TEXT_H_ */

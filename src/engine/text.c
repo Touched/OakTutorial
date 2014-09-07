@@ -17,6 +17,10 @@ rbox boy_girl = {0, 0x12, 9, 9, 4, 0xF, 0x174};
 
 rbox info_multichoice = {0, 2, 2, 15, 6, 0xF, 0x130};
 
+u8 multichoice_field(u8, u8);
+int multichoice_prepare(u8 id, u8, u8, u8, u8, u8, u32);
+int print_string(u16 id, u8 font, u8 x, u8 y, u32 bg_color, u32 fg_color, char* str);
+
 u16 showMultichoice(rbox *box, char **choices) {
 	u16 id;
 	u8 current;
@@ -30,20 +34,15 @@ u16 showMultichoice(rbox *box, char **choices) {
 	clear_box(id, 0x11);
 
 	// Draw strings
-	// id, font, x, y, bg_color, fg_color, str
-	int (*print)(u16, u8, u8, u8, u32, u32, u32*) = (int (*)(void)) 0x0812E51C + 1;
-
 	for (number = 0; choices[number]; ++number) {
-		print(id, 2, 8, 1 + 0x10 * number, 1, 0, choices[number]);
+		print_string(id, 2, 8, 1 + 0x10 * number, 1, 0, choices[number]);
 	}
 
 	// Field
-	u8 (*field)(u8, u8) = (u8 (*)(void)) 0x080F79D8 + 1;
-	current = field(2, 1);
+	current = multichoice_field(2, 1);
 
 	// Allow moving the selecty thing
-	int (*huh)(u8, u8, u8, u8, u8, u8, u32) = (int (*)(void)) 0x0810F7D8 + 1;
-	huh(id, 2, 0, 1, current + 2, number, 0);
+	multichoice_prepare(id, 2, 0, 1, current + 2, number, 0);
 
 	rboxid_to_vram(id, 3);
 

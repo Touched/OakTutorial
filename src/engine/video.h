@@ -6,6 +6,10 @@
 #define ROTSCALE_EMPTY 0x8231CFC
 void (*object_callback_nullsub)(void) = (void (*)(void)) 0x0800760C + 1;
 
+struct object;
+typedef struct object object;
+typedef void (*object_callback)(object*);
+
 typedef struct frame {
 	u16 data;
 	u16 duration;
@@ -31,11 +35,10 @@ typedef struct template {
 	u16 pal_tag;
 	sprite *oam;
 	frame **animation;
-	u32 graphics;
-	u32 rotscale;
-	u32 callback;
+	u32 *graphics;
+	rotscale_frame **rotscale;
+	object_callback callback;
 } template;
-
 
 typedef struct object {
 	sprite final_oam;
@@ -88,17 +91,18 @@ fade_ctrl *fade_control = (fade_ctrl *) 0x02037AB8;
 object *objects = (object *) 0x0202063C;
 sprite *oamdata = (sprite*)0x07000000;
 
-u16 object_load_compressed_graphics(u32 *src);
-u16 object_load_graphics(u32 *src);
-u8 object_load_palette(u32 *src);
-u8 object_load_compressed_palette(u32 *src);
-u8 object_display(u32 *temp, u16 x, u16 y, u8 b);
+u16 object_load_compressed_graphics(resource *src);
+u16 object_load_graphics(resource *src);
+u8 object_load_palette(resource *src);
+u8 object_load_compressed_palette(resource *src);
+void object_delete_and_free(object* obj);
+u8 object_display(template *temp, u16 x, u16 y, u8 b);
 void load_palette(u32 *src, u16 dest_offset, u16 length);
 void display_ioreg_set(u8 reg, u16 value);
 
 void gpu_tile_bg_drop_all_sets(u32 val);
 void bg_vram_setup(u8 unk, u32 *config, u8 layers);
-void bgid_set_tilemap(u8 bgid, u32 *tilemap);
+void bgid_set_tilemap(u8 bgid, void *tilemap);
 u32 bgid_mod_x_offset(u8 bgid, u32 delta, u8 mode); /* 0: override, 1: add, 2: sub */
 u32 bgid_mod_y_offset(u8 bgid, u32 delta, u8 mode); /* 0: override, 1: add, 2: sub */
 
