@@ -3,7 +3,6 @@
 
 #include "../types.h"
 
-#define ROTSCALE_EMPTY 0x8231CFC
 void (*object_callback_nullsub)(void) = (void (*)(void)) 0x0800760C + 1;
 
 struct object;
@@ -22,6 +21,8 @@ typedef struct rotscale_frame {
 	u8 duration;
 	u16 field_6;
 }  rotscale_frame;
+
+#define ROTSCALE_EMPTY ((rotscale_frame **) 0x08231CFC)
 
 typedef struct sprite {
 	u16 attr0;
@@ -67,7 +68,7 @@ typedef struct object {
 } object;
 
 typedef struct resource {
-	u32 tiles;
+	void *data;
 	u16 size;
 	u16 tag;
 } resource;

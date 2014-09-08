@@ -29,23 +29,23 @@ void static_callback(object *self) {
 }
 
 /* Lucas */
-resource lucasGraphics = { lucasshrinkTiles, 0x4000, 0x1000 };
-resource lucasPalette = { lucasshrinkPal, 0x1000, 0x1000  };
-template lucasTop = { 0x1000, 0x1000, &oam, &pAnimTopShrink, 0, 0x8231CFC, static_callback };
-template lucasBottom = { 0x1000, 0x1000, &oam, &pAnimBottomShrink, 0, 0x8231CFC, static_callback };
+resource lucasGraphics = { (void *) lucasshrinkTiles, 0x4000, 0x1000 };
+resource lucasPalette = { (void *) lucasshrinkPal, 0x1000, 0x1000  };
+template lucasTop = { 0x1000, 0x1000, &oam, pAnimTopShrink, 0, ROTSCALE_EMPTY, static_callback };
+template lucasBottom = { 0x1000, 0x1000, &oam, pAnimBottomShrink, 0, ROTSCALE_EMPTY, static_callback };
 
 /* Dawn */
-resource dawnGraphics = { dawnshrinkTiles, 0x4000, 0x200 };
-resource dawnPalette = { dawnshrinkPal, 0x200, 0x200  };
-template dawnTop = { 0x200, 0x200, &oam, &pAnimTopShrink, 0, 0x8231CFC, static_callback };
-template dawnBottom = { 0x200, 0x200, &oam, &pAnimBottomShrink, 0, 0x8231CFC, static_callback };
+resource dawnGraphics = { (void *) dawnshrinkTiles, 0x4000, 0x200 };
+resource dawnPalette = { (void *) dawnshrinkPal, 0x200, 0x200  };
+template dawnTop = { 0x200, 0x200, &oam, pAnimTopShrink, 0, ROTSCALE_EMPTY, static_callback };
+template dawnBottom = { 0x200, 0x200, &oam, pAnimBottomShrink, 0, ROTSCALE_EMPTY, static_callback };
 
 void loadShrinkSprite(resource *graphics, resource *palette, template *top, template *bottom, u16 x, u16 y) {
-	object_load_compressed_graphics((u32*) graphics);
-	object_load_palette((u32*) palette);
+	object_load_compressed_graphics(graphics);
+	object_load_palette(palette);
 
-	object_display((u32*) top, x, y, 1);
-	object_display((u32*) bottom, x, y + 0x40, 1);
+	object_display(top, x, y, 1);
+	object_display(bottom, x, y + 0x40, 1);
 }
 
 /*
@@ -72,7 +72,7 @@ void fadeInPlayerLastTime(u8 index) {
 	} else {
 		int i = 0;
 		for (i = 0; i < 2; ++i)
-			((void (*)(u32*)) 0x08007805)(&objects[i]);
+			object_delete_and_free(&objects[i]);
 
 		if ((*player)->gender)
 			LOAD_SHRINK_SPRITE(dawn);
