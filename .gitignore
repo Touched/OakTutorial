@@ -33,8 +33,8 @@
 *.raw
 
 # ROMS
-*.gba
-*.nds
+*.gba*
+*.nds*
 
 # Generated files
 *.lsc
@@ -42,11 +42,17 @@ makefile
 toolchain
 devkitARM
 
-# Emulator crap
+# Emulator and tools crap
 *.exe
 *.sav
 *.ini
 *.dll
+*.nlz
+*.sgm
+
+# Images
+graphics
+images/old
 
 # Eclipse
 .project
