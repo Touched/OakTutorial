@@ -56,6 +56,8 @@ void startTutorial(u8 index) {
 
 void fadeInProfBg(u8 index) {
 	if (check_a_pressed(0)) return;
+	
+	audio_play(0x124);
 
 	/*
 	 * Tilemap dimensions
