@@ -327,7 +327,7 @@ void pokemon_callback(object *self) {
 	}
 }
 
-#define PROFESSOR_POKEMON 0x1
+#define PROFESSOR_POKEMON 0x1e1
 #define POKEMON_FRONT_SPRITE (0x0888CF7C + PROFESSOR_POKEMON * sizeof(resource))
 #define POKEMON_PALETTE (0x0888F400 + PROFESSOR_POKEMON * sizeof(resource))
 
