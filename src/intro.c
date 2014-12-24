@@ -327,9 +327,9 @@ void pokemon_callback(object *self) {
 	}
 }
 
-#define PROFESSOR_POKEMON 0x1
-#define POKEMON_FRONT_SPRITE (0x082350AC + PROFESSOR_POKEMON * sizeof(resource))
-#define POKEMON_PALETTE (0x0823730C + PROFESSOR_POKEMON * sizeof(resource))
+#define PROFESSOR_POKEMON 0x1e1
+#define POKEMON_FRONT_SPRITE (0x0888CF7C + PROFESSOR_POKEMON * sizeof(resource))
+#define POKEMON_PALETTE (0x0888F400 + PROFESSOR_POKEMON * sizeof(resource))
 
 /* Pokeball */
 sprite pokeoam = { 0x500, 0xC000, 0x400, 0x0 };
