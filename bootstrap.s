@@ -15,6 +15,7 @@ bx r1
 .global bitUnPack
 bitUnPack:
 	swi #0x10
+	bx lr
 
 .align 2
 .callbacks: .word callback
